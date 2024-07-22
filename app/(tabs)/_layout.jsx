@@ -18,15 +18,43 @@ const TabsLayout = () => {
     <>
         <Tabs>
             <Tabs.Screen 
-                name = "home"
+                name = "editor"
                 options = {{
-                    title: "Home",
+                    title: "Editor",
                     headerShown:false,
                     // tabBarIcon: ({ color, focused }) => (
                     //     <TabIcon
                     //         icon={}
                     //     />
                     // )
+                }}
+            />
+            <Tabs.Screen 
+                name = "dictionary"
+                options = {{
+                    title: "Dictionary",
+                    headerShown:false,
+                }}
+            />
+            <Tabs.Screen 
+                name = "bookmarks"
+                options = {{
+                    title: "Bookmarks",
+                    headerShown:false,
+                }}
+            />
+            <Tabs.Screen 
+                name = "saved-terms"
+                options = {{
+                    title: "Saved Terms",
+                    headerShown:false,
+                }}
+            />
+            <Tabs.Screen 
+                name = "settings"
+                options = {{
+                    title: "Settings",
+                    headerShown:false,
                 }}
             />
         </Tabs>
