@@ -1,9 +1,9 @@
 // colour variables
 
-export var Colours = {
+export default Colours = {
     light: {
         text: "#000000",
-        background: "#fff",
+        background: "#ffffff",
     },
     dark: {
         text: "#fff",

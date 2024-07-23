@@ -3,4 +3,4 @@
 // async storage?
 
 // true for light theme, false for dark theme
-var theme = true;
+export var theme = "light";

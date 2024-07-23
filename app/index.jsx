@@ -3,18 +3,14 @@ import { Text, View, useColorScheme } from 'react-native';
 import { Link } from 'expo-router';
 
 import * as globals from '../config/globals.js'
-import { Colours } from '../constants/colours.js'
+
+import { Colours } from '../constants'
 
 export default function App() {
-  globals.theme = (useColorScheme() == "light") ? true: false;
-  
+  globals.theme = (useColorScheme() == "light" || useColorScheme() == "dark") ? useColorScheme() : "light";
+
   const classNamesView = ["flex-1", "items-center", "justify-center"];
-  if (globals.theme) {
-    classNamesView.push("bg-[" + Colours["light"]["background"] + "]")
-  }
-  else{
-    classNamesView.push("bg-[" + Colours["dark"]["background"] + "]")
-  }
+  classNamesView.push("bg-[" + Colours[globals.theme]["background"] + "]")
   
   return (
     <View className={classNamesView.join(" ")}>
