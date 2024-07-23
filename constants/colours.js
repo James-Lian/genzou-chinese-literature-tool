@@ -12,6 +12,7 @@ export default Colours = {
     dark: {
         text: "#fff",
         background: "#292929",
+        darker: "#313233",
         red: "#d16666",
         indigo: "#A8A1F7",
         gray: "#7d8799",

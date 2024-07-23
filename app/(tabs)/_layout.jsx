@@ -1,5 +1,5 @@
 import { View, Text, Image } from 'react-native'
-import { Tabs, Redirect } from 'expo-router';
+import { Tabs, Stack } from 'expo-router';
 
 import * as globals from '../../config/globals.js'
 
@@ -34,7 +34,7 @@ const TabsLayout = () => {
                         borderTopWidth: 1,
                         borderTopColor: '#D3D3D3',
                         height: 88
-                    }
+                    },
                 }}
             >                
                 <Tabs.Screen 
@@ -53,31 +53,16 @@ const TabsLayout = () => {
                     }}
                 />
                 <Tabs.Screen 
-                    name = "dictionary"
+                    name = "lookup"
                     options = {{
-                        title: "Dictionary",
+                        title: "Lookup",
                         headerShown: false,
                         tabBarIcon: ({ color, focused }) => (
                             <TabIcon
                                 color={color}
                                 focused={focused}
-                                icon={Icons.bookOpen}
-                                name="Dictionary"
-                            />
-                        )
-                    }}
-                />
-                <Tabs.Screen 
-                    name = "bookmarks"
-                    options = {{
-                        title: "Bookmarks",
-                        headerShown: false,
-                        tabBarIcon: ({ color, focused }) => (
-                            <TabIcon
-                                color={color}
-                                focused={focused}
-                                icon={Icons.bookmark}
-                                name="Bookmarks"
+                                icon={Icons.search}
+                                name="Lookup"
                             />
                         )
                     }}
@@ -93,6 +78,21 @@ const TabsLayout = () => {
                                 focused={focused}
                                 icon={Icons.star}
                                 name="Saved Terms"
+                            />
+                        )
+                    }}
+                />
+                <Tabs.Screen 
+                    name = "files"
+                    options = {{
+                        title: "Files",
+                        headerShown: false,
+                        tabBarIcon: ({ color, focused }) => (
+                            <TabIcon
+                                color={color}
+                                focused={focused}
+                                icon={Icons.file}
+                                name="Files"
                             />
                         )
                     }}

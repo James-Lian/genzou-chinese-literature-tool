@@ -22,7 +22,7 @@ export default function App() {
       <Text className="text-3xl font-qbold mt-2 px-8 text-center" style={{color: Colours[globals.theme]["text"]}}>(跟走)</Text>
       <Text className="text-1xl font-qbolditalics mt-2 mb-8 px-8 text-center" style={{color: Colours[globals.theme]["gray"]}}>follow along and say goodbye to textbook B.S. {'<'}3 </Text>
 
-      <ScrollView className="rounded-lg pt-3" style={{backgroundColor: Colours[globals.theme]["darker"]}}>
+      <ScrollView className="rounded-lg pt-3 shadow-inner" style={{backgroundColor: Colours[globals.theme]["darker"]}}>
         <Text className="text-[18px] font-qitalic my-2 px-6" style={{color: Colours[globals.theme]["text"]}}>Discover our features... </Text>
 
         <View className="flex-1 m-2 h-full p-4 rounded-lg shadow" style={{backgroundColor: "white"}}>
