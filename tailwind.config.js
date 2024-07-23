@@ -6,7 +6,8 @@ module.exports = {
       fontFamily: {
         qnormal: ["quardratic", "sans-serif"],
         qbold: ["quardraticb", "sans-serif"],
-        qitalic: ["quardratici", "sans-serif"]
+        qitalic: ["quardratici", "sans-serif"],
+        qbolditalics: ["quardraticz", "sans-serif"]
       }
     },
   },

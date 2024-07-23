@@ -9,6 +9,7 @@ const RootLayout = () => {
         "quardratic": require("../assets/fonts/quardratic.ttf"),
         "quardraticb": require("../assets/fonts/quardraticb.ttf"),
         "quardratici": require("../assets/fonts/quardratici.ttf"),
+        "quardraticz": require("../assets/fonts/quardraticz.ttf"),
     });
 
     useEffect(() => {
