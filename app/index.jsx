@@ -2,7 +2,7 @@
 
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, useColorScheme, ScrollView, Image } from 'react-native';
-import { Link } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import * as globals from '../config/globals.js'
@@ -10,18 +10,19 @@ import * as globals from '../config/globals.js'
 import { Colours } from '../constants'
 import { Icons } from "../constants"
 
+import { WelcomeButton } from '../components'
+
 export default function App() {
   globals.theme = (useColorScheme() == "light" || useColorScheme() == "dark") ? useColorScheme() : "light";
   // globals.theme = "dark"; // testing out dark theme
 
   return (
     <SafeAreaView className="flex-1 items-center h-full" style={{backgroundColor: Colours[globals.theme]["background"]}}>
-      <StatusBar style="auto" />
       <Text className="text-3xl font-qbold mt-12 px-8 text-center" style={{color: Colours[globals.theme]["text"]}}>Welcome to Genzou!</Text>
       <Text className="text-3xl font-qbold mt-2 px-8 text-center" style={{color: Colours[globals.theme]["text"]}}>(跟走)</Text>
       <Text className="text-1xl font-qbolditalics mt-2 mb-8 px-8 text-center" style={{color: Colours[globals.theme]["gray"]}}>follow along and say goodbye to textbook B.S. {'<'}3 </Text>
 
-      <ScrollView className="rounded-lg pt-2" style={{backgroundColor: Colours[globals.theme]["darker"]}}>
+      <ScrollView className="rounded-lg pt-3" style={{backgroundColor: Colours[globals.theme]["darker"]}}>
         <Text className="text-[18px] font-qitalic my-2 px-6" style={{color: Colours[globals.theme]["text"]}}>Discover our features... </Text>
 
         <View className="flex-1 m-2 h-full p-4 rounded-lg shadow" style={{backgroundColor: "white"}}>
@@ -108,8 +109,17 @@ export default function App() {
           </View>
         </View>
       </ScrollView>
-        
-      <Link href="/editor" className="text-2xl font-qnormal mt-3 text-center" style={{color: 'blue'}}>{'<'} Enter {'>'}</Link>
+              
+      <View className="w-full items-center px-3">
+        <WelcomeButton
+          title="< Enter >"
+          handlePress={() => router.replace('/editor')}
+          containerStyles="w-full mt-8"
+          textStyles="text-2xl text-center"
+        />
+      </View>
+      
+      <StatusBar style="auto" />
     </SafeAreaView>
   );
 }
