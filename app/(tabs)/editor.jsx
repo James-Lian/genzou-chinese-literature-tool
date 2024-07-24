@@ -1,4 +1,4 @@
-import { View, Text, Button, Animated, ScrollView, Image, TouchableOpacity } from 'react-native'
+import { View, Text, Button, Animated, ScrollView, Image, TouchableOpacity, TextInput, TouchableWithoutFeedback } from 'react-native'
 import React, { useRef } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
@@ -62,99 +62,27 @@ const Editor = () => {
           </View>
         </View>
       </View>
-      <ScrollView
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollOffsetY}}}],
-          {useNativeDriver: false}
-        )}
-        className="min-h-full rounded-lg"
-        style={{backgroundColor: Colours[globals.theme]["darker"]}}
-      >
-      <View className="flex-1 m-2 h-full p-4 rounded-lg shadow" style={{backgroundColor: "white"}}>
-          <View className="flex-row my-1 items-start">
-            <View className="items-center w-fit h-fit self-start max-h-[48px] rounded-lg" style={{backgroundColor: Colours[globals.theme]["indigo"]}}>
-              <Image
-                source={Icons.camera}
-                className="min-w-[23px] max-h-[23px] w-full m-3"
-                style={{tintColor: "white"}}
-                resizeMode="contain"
-              />
-            </View>
-            <Text className="ml-2 text-[16px] font-qbold mt-2.5" style={{color: Colours[globals.theme]["text"]}}> {'>'}  Scan Chinese text with your camera </Text>
-          </View>
-        </View>
 
-        <View className="flex-1 m-2 h-full p-4 rounded-lg shadow" style={{backgroundColor: "white"}}>
-          <View className="flex-row my-1 items-start">
-            <View className="items-center w-fit h-fit self-start max-h-[48px] rounded-lg" style={{backgroundColor: Colours[globals.theme]["indigo"]}}>
-              <Image
-                source={Icons.typing}
-                className="min-w-[23px] max-h-[23px] w-full m-3"
-                style={{tintColor: "white"}}
-                resizeMode="contain"
-              />
-            </View>
-            <Text className="ml-2 text-[16px] font-qbold mt-2.5" style={{color: Colours[globals.theme]["text"]}}> {'>'}  Convert your textbooks to Pinyin </Text>
-          </View>
-        </View>
-
-        <View className="flex-1 m-2 h-full p-4 rounded-lg shadow" style={{backgroundColor: "white"}}>
-          <View className="flex-row my-1 items-start">
-            <View className="items-center w-fit h-fit self-start max-h-[48px] rounded-lg" style={{backgroundColor: Colours[globals.theme]["indigo"]}}>
-              <Image
-                source={Icons.search}
-                className="min-w-[23px] max-h-[23px] w-full m-3"
-                style={{tintColor: "white"}}
-                resizeMode="contain"
-              />
-            </View>
-            <Text className="ml-2 text-[16px] font-qbold mt-2.5" style={{color: Colours[globals.theme]["text"]}}> {'>'}  Look up phrases in a dictionary </Text>
-          </View>
-        </View>
-
-        <View className="flex-1 m-2 h-full p-4 rounded-lg shadow" style={{backgroundColor: "white"}}>
-          <View className="flex-row my-1 items-start">
-            <View className="items-center w-fit h-fit self-start max-h-[48px] rounded-lg" style={{backgroundColor: Colours[globals.theme]["indigo"]}}>
-              <Image
-                source={Icons.star}
-                className="min-w-[23px] max-h-[23px] w-full m-3"
-                style={{tintColor: "white"}}
-                resizeMode="contain"
-              />
-            </View>
-            <Text className="ml-2 text-[16px] font-qbold mt-2.5" style={{color: Colours[globals.theme]["text"]}}> {'>'}  Bookmark your favourite words </Text>
-          </View>
-        </View>
-
-        <View className="flex-1 m-2 h-full p-4 rounded-lg shadow" style={{backgroundColor: "white"}}>
-          <View className="flex-row my-1 items-start">
-            <View className="items-center w-fit h-fit self-start max-h-[48px] rounded-lg" style={{backgroundColor: Colours[globals.theme]["indigo"]}}>
-              <Image
-                source={Icons.file}
-                className="min-w-[23px] max-h-[23px] w-full m-3"
-                style={{tintColor: "white"}}
-                resizeMode="contain"
-              />
-            </View>
-            <Text className="ml-2 text-[16px] font-qbold mt-2.5" style={{color: Colours[globals.theme]["text"]}}> {'>'}  Translate entire sentences </Text>
-          </View>
-        </View>
-
-        <View className="flex-1 m-2 h-full p-4 rounded-lg shadow" style={{backgroundColor: "white"}}>
-          <View className="flex-row my-1 items-start">
-            <View className="items-center w-fit h-fit self-start max-h-[48px] rounded-lg" style={{backgroundColor: Colours[globals.theme]["indigo"]}}>
-              <Image
-                source={Icons.messageSquare}
-                className="min-w-[23px] max-h-[23px] w-full m-3"
-                style={{tintColor: "white"}}
-                resizeMode="contain"
-              />
-            </View>
-            <Text className="ml-2 text-[16px] font-qbold mt-2.5" style={{color: Colours[globals.theme]["text"]}}> {'>'}  Learn pronunciation with TTS </Text>
-          </View>
-        </View>
-
-      </ScrollView>
+      <View className="flex-1 w-full px-2">
+        <ScrollView
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollOffsetY}}}],
+            {useNativeDriver: false}
+          )}
+          className="rounded-lg w-full"
+          style={{backgroundColor: Colours[globals.theme]["darker"]}}
+        >
+            <TextInput 
+              className={`bg-transparent p-3 font-qnormal`}
+              style={{ fontSize: globals.editorTextSize }}
+              placeholder="Enter Chinese text here... "
+              placeholderTextColor={Colours[globals.theme]["gray"]}
+              multiline={true}
+              textAlignVertical={true}
+              allowFontScaling={false}
+            />
+        </ScrollView>
+      </View>
     </SafeAreaView>
   )
 }
