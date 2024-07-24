@@ -1,6 +1,7 @@
-import { View, Text, Button, Animated, ScrollView, Image, TouchableOpacity, TextInput, Dimensions, PanResponder, Modal, TouchableWithoutFeedback } from 'react-native'
+import { View, Text, Button, Animated, ScrollView, Image, TouchableOpacity, TextInput, Dimensions, PanResponder, Modal, TouchableWithoutFeedback, Switch } from 'react-native'
 import React, { useRef, useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import SelectDropdown from 'react-native-select-dropdown'
 
 import * as globals from '../../config/globals.js'
 import { SideMenu } from '../../components'
@@ -104,7 +105,7 @@ const Editor = () => {
               />
             </TouchableOpacity>
             <TouchableOpacity
-              OnPress={() => {console.log('happened')}}
+              onPress={() => {setMoreOptionsOpen(true); console.log("happened")}}
             >
               <Image 
                 source={Icons.more}
@@ -151,10 +152,10 @@ const Editor = () => {
               editable={false}
               className={`bg-transparent p-3 font-qbold`}
               style={{ fontSize: globals.editorTextSize }}
-              placeholder= {(globals.pinyinMode) ? "Pinyin will appear here... " : "The translation will appear here... "}
+              placeholder= {globals.editorModes[globals.currEditorMode] + " will appear here... "}
               placeholderTextColor={"white"}
               multiline={true}
-              textAlignVertical={true}
+              textAlignVertical={true}flex-1 items-center h-full
               allowFontScaling={false}
             />
         </ScrollView>
@@ -162,15 +163,21 @@ const Editor = () => {
 
       <Modal
         visible={moreOptionsOpen}
-        animationType="slide"
+        animationType="none"
         transparent={true}
         onRequestClose={toggleMoreOptions}
       >
         <TouchableWithoutFeedback onPress={toggleMoreOptions}>
-          <View className="w-full h-full bg-black flex-1 justify-center items-center">
-            <SideMenu>
-              <Text> HI!! </Text>
-            </SideMenu>
+          <View className="w-full h-full justify-center items-end" style={{backgroundColor: "#00000060"}}>
+            <TouchableWithoutFeedback>
+              <View>
+                <SideMenu>
+                  <Text className="font-qnormal text-2xl" style={{color: Colours[globals.theme]["text"]}}>Editor Options</Text>
+                  <View className="w-full h-1 my-3" style={{backgroundColor: Colours[globals.theme]["text"]}} />
+                  <SelectDropdown />
+                </SideMenu>
+              </View>
+            </TouchableWithoutFeedback>
           </View>
         </TouchableWithoutFeedback>
       </Modal>

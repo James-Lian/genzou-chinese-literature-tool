@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, ScrollView, Dimensions } from 'react-native'
 import React from 'react'
 
 import * as globals from '../config/globals.js'
@@ -6,12 +6,19 @@ import * as globals from '../config/globals.js'
 import { Colours } from '../constants'
 import { Icons } from "../constants"
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 const SideMenu = ({ children }) => {
-  return (
-    <View className="flex-col h-full w-max-[600px] justify-start items-start shadow-lg border-l-1" style={{borderColor: "#D3D3D3"}}>
-      {children}
-    </View>
-  )
+    const insets = useSafeAreaInsets();
+    const windowWidth = Dimensions.get('window').width
+
+    return (
+        <View pointerEvents="none" className={`h-full justify-start items-start shadow-lg border-l-1`} style={{backgroundColor: Colours[globals.theme]["background"], borderColor: "#D3D3D3", paddingTop:insets.top, minWidth: windowWidth * 3 / 5}}>
+            <ScrollView className="pl-[20px] py-[8px]" style={{minWidth: windowWidth * 3 / 5 - 20}}>
+                {children}
+            </ScrollView>
+        </View>
+    )
 }
 
 export default SideMenu
