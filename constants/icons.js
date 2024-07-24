@@ -15,6 +15,7 @@ import plusCircle from '../assets/icons/plus-circle.png'
 import plusSquare from '../assets/icons/plus-square.png'
 import minusCircle from '../assets/icons/minus-circle.png'
 import minusSquare from '../assets/icons/minus-square.png'
+import volume from '../assets/icons/volume.png'
 
 export default { 
     edit, 
@@ -34,4 +35,5 @@ export default {
     plusSquare,
     minusCircle,
     minusSquare,
+    volume,
 };
