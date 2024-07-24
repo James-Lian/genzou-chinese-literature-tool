@@ -8,6 +8,7 @@ export default Colours = {
         red: "#d16666",
         indigo: "#968EF6",
         gray: "#999fa8",
+        darkerGray: "#808080"
     },
     dark: {
         text: "#fff",
@@ -16,5 +17,6 @@ export default Colours = {
         red: "#d16666",
         indigo: "#A8A1F7",
         gray: "#7d8799",
+        darkerGray: "#808080"
     }
 }

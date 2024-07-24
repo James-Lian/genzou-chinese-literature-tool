@@ -11,5 +11,27 @@ import cornerDownRight from '../assets/icons/corner-down-right.png'
 import messageSquare from '../assets/icons/message-square.png'
 import download from '../assets/icons/download.png'
 import typing from '../assets/icons/type.png'
+import plusCircle from '../assets/icons/plus-circle.png'
+import plusSquare from '../assets/icons/plus-square.png'
+import minusCircle from '../assets/icons/minus-circle.png'
+import minusSquare from '../assets/icons/minus-square.png'
 
-export default { edit, bookmark, bookOpen, more, star, search, camera, file, rightChevrons, cornerDownRight, messageSquare, download, typing };
+export default { 
+    edit, 
+    bookmark, 
+    bookOpen, 
+    more, 
+    star, 
+    search, 
+    camera, 
+    file, 
+    rightChevrons, 
+    cornerDownRight, 
+    messageSquare, 
+    download, 
+    typing, 
+    plusCircle,
+    plusSquare,
+    minusCircle,
+    minusSquare,
+};
