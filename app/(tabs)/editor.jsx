@@ -1,4 +1,4 @@
-import { View, Text, Button, Animated, ScrollView, Image, TouchableOpacity, TextInput, Dimensions, PanResponder, Modal, TouchableWithoutFeedback, Switch } from 'react-native'
+import { View, Text, Button, Animated, ScrollView, Image, TouchableOpacity, TextInput, Dimensions, PanResponder, Modal, TouchableWithoutFeedback, StyleSheet } from 'react-native'
 import React, { useRef, useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import SelectDropdown from 'react-native-select-dropdown'
@@ -14,6 +14,9 @@ const Editor = () => {
   const secondScroll = useRef()
 
   const insets = useSafeAreaInsets();
+
+  const windowFullWidth = Dimensions.get('window').width;
+
   let windowHeight = Dimensions.get('window').height;
   windowHeight -= insets.bottom + insets.top + 48 + 88 + 22
 
@@ -30,9 +33,7 @@ const Editor = () => {
   const [moreOptionsOpen, setMoreOptionsOpen] = useState(false);
 
   const toggleMoreOptions = () => {
-    console.log('dude')
     setMoreOptionsOpen(!moreOptionsOpen);
-    console.log('activated', moreOptionsOpen)
   }
 
   const panResponder = useRef(
@@ -105,7 +106,7 @@ const Editor = () => {
               />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => {setMoreOptionsOpen(true); console.log("happened")}}
+              onPress={() => {setMoreOptionsOpen(true);}}
             >
               <Image 
                 source={Icons.more}
@@ -173,8 +174,41 @@ const Editor = () => {
               <View>
                 <SideMenu>
                   <Text className="font-qnormal text-2xl" style={{color: Colours[globals.theme]["text"]}}>Editor Options</Text>
-                  <View className="w-full h-1 my-3" style={{backgroundColor: Colours[globals.theme]["text"]}} />
-                  <SelectDropdown />
+                  <View className="w-full h-0.5 my-3 rounded" style={{backgroundColor: Colours[globals.theme]["text"]}} />
+                  <SelectDropdown
+                    data={globals.editorModes}
+                    defaultValueByIndex={0}
+                    onSelect={(selectedItem, index) => {
+                      console.log(selectedItem, index)
+                    }}
+                    renderButton={(selectedItem, isOpened) => {
+                      return (
+                        <View style={styles.dropdownButtonStyle}>
+                          <Text style={styles.dropdownButtonTxtStyle}>
+                            {selectedItem}
+                          </Text>
+                          {/* <Image
+                            source={(isOpened ? Icons.upChevron : Icons.downChevron)}
+                            tintColor={Colours[globals.theme]["gray"]}
+                            resizeMode='contain'
+                            className="max-h-[22px] max-w-[32px]"
+                          /> */}
+                        </View>
+                      )
+                    }}
+                    renderItem={(item, index, isSelected) => {
+                      return (
+                        <View style={{
+                          ...styles.dropdownItemStyle,
+                          ...(isSelected && { backgroundColor: '#D2D9DF' }),
+                          }}>
+                          <Text style={styles.dropdownButtonTxtStyle}>{item}</Text>
+                        </View>
+                      )
+                    }}
+                    showsVerticalScrollIndicator={false}
+                    dropdownStyle={styles.dropdownMenuStyle}
+                  />
                 </SideMenu>
               </View>
             </TouchableWithoutFeedback>
@@ -186,3 +220,40 @@ const Editor = () => {
 }
 
 export default Editor
+
+const styles = StyleSheet.create({
+  dropdownButtonStyle: {
+    width: 200,
+    height: 50,
+    backgroundColor: Colours[globals.theme]["darker"],
+    borderRadius: 12,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+  },
+  dropdownButtonTxtStyle: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: '500',
+    color: Colours[globals.theme]["text"],
+  },
+  dropdownMenuStyle: {
+    backgroundColor: Colours[globals.theme]["background"],
+    borderRadius: 8,
+  },
+  dropdownItemStyle: {
+    width: '100%',
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  dropdownItemTxtStyle: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: '500',
+    color: Colours[globals.theme]["text"],
+  },
+});

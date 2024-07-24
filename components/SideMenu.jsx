@@ -13,7 +13,7 @@ const SideMenu = ({ children }) => {
     const windowWidth = Dimensions.get('window').width
 
     return (
-        <View pointerEvents="none" className={`h-full justify-start items-start shadow-lg border-l-1`} style={{backgroundColor: Colours[globals.theme]["background"], borderColor: "#D3D3D3", paddingTop:insets.top, minWidth: windowWidth * 3 / 5}}>
+        <View className={`h-full justify-start items-start shadow-lg border-l-1`} style={{backgroundColor: Colours[globals.theme]["background"], borderColor: "#D3D3D3", paddingTop:insets.top, minWidth: windowWidth * 3 / 5}}>
             <ScrollView className="pl-[20px] py-[8px]" style={{minWidth: windowWidth * 3 / 5 - 20}}>
                 {children}
             </ScrollView>

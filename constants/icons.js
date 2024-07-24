@@ -16,6 +16,9 @@ import plusSquare from '../assets/icons/plus-square.png'
 import minusCircle from '../assets/icons/minus-circle.png'
 import minusSquare from '../assets/icons/minus-square.png'
 import volume from '../assets/icons/volume.png'
+import downChevron from '../assets/icons/chevron-down.png'
+import upChevron from '../assets/icons/chevron-up.png'
+
 
 export default { 
     edit, 
@@ -36,4 +39,6 @@ export default {
     minusCircle,
     minusSquare,
     volume,
+    downChevron,
+    upChevron,
 };
