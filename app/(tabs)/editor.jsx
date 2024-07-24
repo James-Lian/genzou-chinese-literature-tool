@@ -1,9 +1,9 @@
-import { View, Text, Button, Animated, ScrollView, Image, TouchableOpacity, TextInput, Dimensions, PanResponder } from 'react-native'
+import { View, Text, Button, Animated, ScrollView, Image, TouchableOpacity, TextInput, Dimensions, PanResponder, Modal, TouchableWithoutFeedback } from 'react-native'
 import React, { useRef, useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import * as globals from '../../config/globals.js'
-import DynamicHeader from '../../components/DynamicHeader.js'
+import { SideMenu } from '../../components'
 import { Icons } from '../../constants/index.js'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -13,24 +13,44 @@ const Editor = () => {
   const secondScroll = useRef()
 
   const insets = useSafeAreaInsets();
-
   let windowHeight = Dimensions.get('window').height;
   windowHeight -= insets.bottom + insets.top + 48 + 88 + 22
-  let [topHeight, setTopHeight] = useState(Math.floor(windowHeight/2));
-  let [bottomHeight, setBottomHeight] = useState(Math.floor(windowHeight/2));
+
+  let [topHeight, setTopHeight] = useState(Math.floor(windowHeight/3));
+  let topHeightRef = useRef({});
+  topHeightRef.current = topHeight
+
+  let [bottomHeight, setBottomHeight] = useState(Math.floor(windowHeight/3*2));
+  let bottomHeightRef = useRef({});
+  bottomHeightRef.current = bottomHeight
+  
+  let heightChangeRef = useRef(0);
+
+  const [moreOptionsOpen, setMoreOptionsOpen] = useState(false);
+
+  const toggleMoreOptions = () => {
+    console.log('dude')
+    setMoreOptionsOpen(!moreOptionsOpen);
+    console.log('activated', moreOptionsOpen)
+  }
 
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
       onPanResponderMove: (event, gestureState) => {
-        const newTopHeight = topHeight + gestureState.dy;
-        const newBottomHeight = bottomHeight - gestureState.dy;
+        const newTopHeight = topHeightRef.current - heightChangeRef.current + gestureState.dy;
+        const newBottomHeight = bottomHeightRef.current + heightChangeRef.current - gestureState.dy;
 
         if (newTopHeight >= minScrollHeight && newBottomHeight >= minScrollHeight) {
           setTopHeight(newTopHeight);
           setBottomHeight(newBottomHeight);
         }
+
+        heightChangeRef.current = gestureState.dy;
       },
+      onPanResponderRelease: (event, gestureState) => {
+        heightChangeRef.current = 0;
+      }
     })
   ).current;
 
@@ -47,7 +67,7 @@ const Editor = () => {
                 className="ml-[8px] max-h-[28px] max-w-[38px]"
               />
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => console.log("yeah bro why")}>
               <Image 
                 source={Icons.plusSquare}
                 tintColor={Colours[globals.theme]["darkerGray"]}
@@ -83,7 +103,9 @@ const Editor = () => {
                 className="max-h-[28px] max-w-[38px]"
               />
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity
+              OnPress={() => {console.log('happened')}}
+            >
               <Image 
                 source={Icons.more}
                 tintColor={Colours[globals.theme]["darkerGray"]}
@@ -137,6 +159,21 @@ const Editor = () => {
             />
         </ScrollView>
       </View>
+
+      <Modal
+        visible={moreOptionsOpen}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={toggleMoreOptions}
+      >
+        <TouchableWithoutFeedback onPress={toggleMoreOptions}>
+          <View className="w-full h-full bg-black flex-1 justify-center items-center">
+            <SideMenu>
+              <Text> HI!! </Text>
+            </SideMenu>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </SafeAreaView>
   )
 }
