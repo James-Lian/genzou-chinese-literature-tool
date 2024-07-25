@@ -7,12 +7,16 @@ import * as Speech from 'expo-speech';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import Toast from 'react-native-root-toast';
 
+import { translate } from '@vitalets/google-translate-api';
+import { pinyin } from "pinyin-pro"
+
 import * as globals from '../../config/globals.js'
 import { SideMenu } from '../../components'
 import { Icons } from '../../constants/index.js'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Editor = () => {
+  
   const minScrollHeight = 30;
   const firstScroll = useRef()
   const secondScroll = useRef()
@@ -72,6 +76,22 @@ const Editor = () => {
     }
   }
   
+  let [resultTxt, setResultTxt] = useState("");
+
+  const textChanged = async (newTxt) => {
+    globals.currText = newTxt;
+    if (globals.editorModes[globals.currEditorMode] == "Translation") {
+      const { text } = await translate(globals.currText, { to: 'en' })
+      setResultTxt(text)
+    }
+    else if (globals.editorModes[globals.currEditorMode] == "Pinyin") {
+      setResultTxt(pinyin(globals.currText))
+    }
+  }
+
+  const [texts, setTexts] = useState([]);
+  const [inputValue, setInputValue] = useState('hi');
+
   return (
     <RootSiblingParent>
       <SafeAreaView className="flex-1 items-center h-full" style={{backgroundColor: Colours[globals.theme]["background"]}}>
@@ -157,7 +177,7 @@ const Editor = () => {
                 multiline={true}
                 textAlignVertical={true}
                 allowFontScaling={false}
-                onChangeText={(txt) => {globals.currText = txt}}
+                onChangeText={(txt) => {textChanged(txt)}}
               />
           </ScrollView>
         </View>
@@ -179,6 +199,7 @@ const Editor = () => {
                 style={{ fontSize: editorTextSize , color: "white"}}
                 placeholder= {globals.editorModes[globals.currEditorMode] + " will appear here... "}
                 placeholderTextColor={"white"}
+                value={resultTxt}
                 multiline={true}
                 textAlignVertical={true}
                 allowFontScaling={false}
@@ -204,6 +225,7 @@ const Editor = () => {
                       defaultValueByIndex={globals.currEditorMode}
                       onSelect={(selectedItem, index) => {
                         globals.currEditorMode = index
+                        textChanged(globals.currText)
                       }}
                       renderButton={(selectedItem, isOpened) => {
                         return (
@@ -233,6 +255,7 @@ const Editor = () => {
                       showsVerticalScrollIndicator={false}
                       dropdownStyle={styles.dropdownMenuStyle}
                     />
+                    <View className="my-1"></View>
                     <SelectDropdown
                       data={globals.voices}
                       defaultValueByIndex={globals.currVoice}
