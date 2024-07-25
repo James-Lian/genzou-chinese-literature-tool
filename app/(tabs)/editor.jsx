@@ -1,4 +1,4 @@
-import { View, Text, Button, Animated, ScrollView, Image, TouchableOpacity, TextInput, Dimensions, PanResponder, Modal, TouchableWithoutFeedback, StyleSheet, Alert } from 'react-native'
+import { View, Text, Button, Animated, ScrollView, Image, TouchableOpacity, TextInput, Dimensions, PanResponder, Modal, TouchableWithoutFeedback, StyleSheet, FlatList } from 'react-native'
 import React, { useRef, useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import SelectDropdown from 'react-native-select-dropdown'
@@ -76,21 +76,46 @@ const Editor = () => {
     }
   }
   
-  let [resultTxt, setResultTxt] = useState("");
-
+  const punctuation = ['。', '，', '、', '‘', '’', '“', '”', '：', '；', '？', '！', '（', '）', '《', '》' ,'·', '•', '…', '「', '」', '‘', '’', '“', '”', '【', '】']
+  
+  let [resultTxts, setResultTxts] = useState([]);
   const textChanged = async (newTxt) => {
     globals.currText = newTxt;
     if (globals.editorModes[globals.currEditorMode] == "Translation") {
-      const { text } = await translate(globals.currText, { to: 'en' })
-      setResultTxt(text)
+      if (globals.currText.trim()) {
+        const { text } = await translate(globals.currText, { to: 'en' })
+        setResultTxts([text])
+      }
+      else {
+        setResultTxts(["Translation will appear here... "])
+      }
     }
     else if (globals.editorModes[globals.currEditorMode] == "Pinyin") {
-      setResultTxt(pinyin(globals.currText))
+      let splitChinese = [];
+      if (globals.currText.trim()) {
+
+        let buildingChar = "";
+        let i = 0;
+        while (i < globals.currText.length) {
+          buildingChar += globals.currText[i];
+          if (punctuation.includes(globals.currText[i]) || punctuation.includes(globals.currText[i+1])) {
+            buildingChar += globals.currText[i+1]
+            i += 2;
+          }
+          else {
+            i++;
+          }
+          splitChinese.push(buildingChar)
+        }
+        setResultTxts(splitChinese);
+      }
+      else {
+        setResultTxts(["Pinyin will appear here... "])
+      }
+
+      // setResultTxts(pinyin(globals.currText))
     }
   }
-
-  const [texts, setTexts] = useState([]);
-  const [inputValue, setInputValue] = useState('hi');
 
   return (
     <RootSiblingParent>
@@ -99,8 +124,7 @@ const Editor = () => {
           <View className="flex-1 justify-center">
             <View className="flex-row justify-start items-center gap-[12px]">
               <TouchableOpacity
-                onPress={() => {setEditorTextSize(editorTextSize - 2)}}
-              >
+                onPress={() => {setEditorTextSize((editorTextSize) => (editorTextSize - 2 > 10) ? editorTextSize - 2 : 12)}}>
                 <Image 
                   source={Icons.minusSquare}
                   tintColor={Colours[globals.theme]["darkerGray"]}
@@ -108,7 +132,7 @@ const Editor = () => {
                   className="ml-[8px] max-h-[28px] max-w-[38px]"
                 />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => {setEditorTextSize(editorTextSize + 2)}}>
+              <TouchableOpacity onPress={() => {setEditorTextSize((editorTextSize) => (editorTextSize + 2 < 88) ? editorTextSize + 2 : 86)}}>
                 <Image 
                   source={Icons.plusSquare}
                   tintColor={Colours[globals.theme]["darkerGray"]}
@@ -165,12 +189,12 @@ const Editor = () => {
         <View className="my-1 flexGrow-1 w-full px-2">
           <ScrollView
             ref={firstScroll}
-            // onContentSizeChange={() => firstScroll.current.scrollToEnd({animated:true})} // maybe later
             className="rounded-lg w-full"
             style={{backgroundColor: Colours[globals.theme]["darker"], maxHeight:topHeight, minHeight:topHeight}}
           >
               <TextInput 
                 className={`bg-transparent p-3 font-qbold`}
+                key={editorTextSize} // force re-render by changeing key
                 style={{ fontSize: editorTextSize, color:Colours[globals.theme]["text"] }}
                 placeholder="Enter Chinese text here... "
                 placeholderTextColor={Colours[globals.theme]["gray"]}
@@ -178,6 +202,7 @@ const Editor = () => {
                 textAlignVertical={true}
                 allowFontScaling={false}
                 onChangeText={(txt) => {textChanged(txt)}}
+                value={globals.currText}
               />
           </ScrollView>
         </View>
@@ -188,23 +213,18 @@ const Editor = () => {
         </View>
 
         <View className="my-1 flexGrow-1 w-full px-2">
-          <ScrollView
+          <FlatList
             ref={secondScroll}
             className="rounded-lg"
             style={{backgroundColor: Colours[globals.theme]["indigo"], maxHeight:bottomHeight, minHeight:bottomHeight}}
-          >
-              <TextInput 
-                editable={false}
-                className={`bg-transparent p-3 font-qbold`}
-                style={{ fontSize: editorTextSize , color: "white"}}
-                placeholder= {globals.editorModes[globals.currEditorMode] + " will appear here... "}
-                placeholderTextColor={"white"}
-                value={resultTxt}
-                multiline={true}
-                textAlignVertical={true}
-                allowFontScaling={false}
-              />
-          </ScrollView>
+            scrollEnabled={true}
+            data={resultTxts}
+            renderItem={({item, index}) => {
+              <View>
+                <Text className={'bg-transparent p-3 font-qbold'} style={{ fontSize: editorTextSize , color: "white"}} allowFontScaling={false}>{item}</Text>
+              </View>
+            }}
+          />
         </View>
 
         <Modal
