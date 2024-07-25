@@ -23,6 +23,9 @@ const Editor = () => {
 
   const insets = useSafeAreaInsets();
 
+  let windowWidth = Dimensions.get('window').width;
+  windowWidth -= 2 + 6; // accounting for margins and padding
+
   let windowHeight = Dimensions.get('window').height;
   windowHeight -= insets.bottom + insets.top + 48 + 88 + 22
 
@@ -71,7 +74,7 @@ const Editor = () => {
     }
     else {
       setSpeaking(true)
-      let toast = Toast.show('Ensure silent mode is off on your device to use TTS.', { duration: Toast.durations.SHORT })
+      let toast = Toast.show('Ensure silent mode is off on your device to use TTS.', { duration: Toast.durations.SHORT }) // set position above keyboard? https://ashwin1014.medium.com/get-height-of-keyboard-on-your-react-native-app-d6fd4b27ccc7
       Speech.speak(globals.currText, {language:globals.voices[globals.currVoice], onDone:() => setSpeaking(false)})
     }
   }
@@ -97,6 +100,7 @@ const Editor = () => {
         let buildingChar = "";
         let i = 0;
         while (i < globals.currText.length) {
+          buildingChar = "";
           buildingChar += globals.currText[i];
           if (punctuation.includes(globals.currText[i]) || punctuation.includes(globals.currText[i+1])) {
             buildingChar += globals.currText[i+1]
@@ -107,11 +111,28 @@ const Editor = () => {
           }
           splitChinese.push(buildingChar)
         }
-        setResultTxts(splitChinese);
+        let chineseWithPinyin = []
+        
+        let numCharsPerRow = Math.floor(windowWidth / (editorTextSize * 1.2))
+        let buildingPhrase = ""
+        i = 0;
+        for (char of splitChinese) {
+          buildingPhrase += char;
+          if ((i != 0) && (i % numCharsPerRow == numCharsPerRow - 1)) {
+            chineseWithPinyin.push(buildingPhrase);
+            buildingPhrase = "";
+          }
+          i++;
+        }
+        chineseWithPinyin.push(buildingPhrase)
+
+        console.log(chineseWithPinyin)
+        setResultTxts(chineseWithPinyin);
       }
       else {
         setResultTxts(["Pinyin will appear here... "])
       }
+      
 
       // setResultTxts(pinyin(globals.currText))
     }
@@ -124,7 +145,7 @@ const Editor = () => {
           <View className="flex-1 justify-center">
             <View className="flex-row justify-start items-center gap-[12px]">
               <TouchableOpacity
-                onPress={() => {setEditorTextSize((editorTextSize) => (editorTextSize - 2 > 10) ? editorTextSize - 2 : 12)}}>
+                onPress={() => {setEditorTextSize((editorTextSize) => (editorTextSize - 2 > 10) ? editorTextSize - 2 : 12); textChanged(globals.currText)}}>
                 <Image 
                   source={Icons.minusSquare}
                   tintColor={Colours[globals.theme]["darkerGray"]}
@@ -132,7 +153,7 @@ const Editor = () => {
                   className="ml-[8px] max-h-[28px] max-w-[38px]"
                 />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => {setEditorTextSize((editorTextSize) => (editorTextSize + 2 < 88) ? editorTextSize + 2 : 86)}}>
+              <TouchableOpacity onPress={() => {setEditorTextSize((editorTextSize) => (editorTextSize + 2 < 88) ? editorTextSize + 2 : 86); textChanged(globals.currText)}}>
                 <Image 
                   source={Icons.plusSquare}
                   tintColor={Colours[globals.theme]["darkerGray"]}
@@ -194,8 +215,8 @@ const Editor = () => {
           >
               <TextInput 
                 className={`bg-transparent p-3 font-qbold`}
-                key={editorTextSize} // force re-render by changeing key
-                style={{ fontSize: editorTextSize, color:Colours[globals.theme]["text"] }}
+                key={editorTextSize} // force re-render by changing key
+                style={{ fontSize: editorTextSize, color: Colours[globals.theme]["text"] }}
                 placeholder="Enter Chinese text here... "
                 placeholderTextColor={Colours[globals.theme]["gray"]}
                 multiline={true}
@@ -215,15 +236,16 @@ const Editor = () => {
         <View className="my-1 flexGrow-1 w-full px-2">
           <FlatList
             ref={secondScroll}
-            className="rounded-lg"
+            className="rounded-lg py-3"
             style={{backgroundColor: Colours[globals.theme]["indigo"], maxHeight:bottomHeight, minHeight:bottomHeight}}
             scrollEnabled={true}
             data={resultTxts}
-            renderItem={({item, index}) => {
-              <View>
-                <Text className={'bg-transparent p-3 font-qbold'} style={{ fontSize: editorTextSize , color: "white"}} allowFontScaling={false}>{item}</Text>
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({item, index}) => (
+              <View className='flexGrow-1'>
+                <Text className={'bg-transparent px-3 font-qbold'} style={{ fontSize: editorTextSize, color: "white"}} allowFontScaling={false}>{item}</Text>
               </View>
-            }}
+            )}
           />
         </View>
 
