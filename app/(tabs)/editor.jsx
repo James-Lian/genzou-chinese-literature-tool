@@ -94,39 +94,65 @@ const Editor = () => {
       }
     }
     else if (globals.editorModes[globals.currEditorMode] == "Pinyin") {
-      let splitChinese = [];
-      if (globals.currText.trim()) {
+      let purePinyin = pinyin(globals.currText.trim()).split(" ")
 
+      let splitChinese = [];
+      let splitPinyin = [];
+
+      if (globals.currText.trim()) {
         let buildingChar = "";
+        let buildingCharPinyin = "";
         let i = 0;
         while (i < globals.currText.length) {
           buildingChar = "";
+          buildingCharPinyin = "";
           buildingChar += globals.currText[i];
+          buildingCharPinyin += purePinyin[i];
           if (punctuation.includes(globals.currText[i]) || punctuation.includes(globals.currText[i+1])) {
             buildingChar += globals.currText[i+1]
+            buildingCharPinyin += purePinyin[i+1];
             i += 2;
           }
           else {
             i++;
           }
           splitChinese.push(buildingChar)
+          splitPinyin.push(buildingCharPinyin)
         }
-        let chineseWithPinyin = []
+
+        let chineseWithPinyin = [];
         
-        let numCharsPerRow = Math.floor(windowWidth / (editorTextSize * 1.2))
+        let numCharsPerRow = Math.floor(windowWidth / (1.2 * editorTextSize * 2.2));
+
+        let numSpacesPerRow = Math.floor(windowWidth / (editorTextSize * 0.48));
+        console.log(numCharsPerRow, numSpacesPerRow)
+
+        numSpacesPerRow = numSpacesPerRow - (numCharsPerRow * 2);
+        // numSpacesPerRow = 2 * Math.round(numSpacesPerRow / 2); // rounding to an even number 
+        
+        let numSpacesPerChar = Math.floor(numSpacesPerRow / numCharsPerRow);
+        numSpacesPerChar = 2 * Math.round(numSpacesPerChar / 2); // rounding to an even number 
+
+
         let buildingPhrase = ""
+        let buildingPinyin = ""
         i = 0;
         for (char of splitChinese) {
+          buildingPhrase += " ".repeat(numSpacesPerChar / 2)
           buildingPhrase += char;
+          buildingPhrase += " ".repeat(numSpacesPerChar / 2)
+          buildingPinyin += splitPinyin[i]
           if ((i != 0) && (i % numCharsPerRow == numCharsPerRow - 1)) {
             chineseWithPinyin.push(buildingPhrase);
+            chineseWithPinyin.push(buildingPinyin);
             buildingPhrase = "";
+            buildingPinyin = "";
           }
           i++;
         }
         chineseWithPinyin.push(buildingPhrase)
+        chineseWithPinyin.push(buildingPinyin)
 
-        console.log(chineseWithPinyin)
         setResultTxts(chineseWithPinyin);
       }
       else {
