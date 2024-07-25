@@ -79,6 +79,20 @@ const Editor = () => {
     }
   }
   
+  const [textWidth, setTextWidth] = useState(0);
+  const hiddenTextRef = useRef(null);
+  const measureHiddenTextWidth = () => {
+    if (hiddenTextRef.current) {
+      hiddenTextRef.current.measure((fx, fy, width, height, px, py) => {
+        setTextWidth(width+2);
+      })
+    }
+  }
+
+  useEffect(() => {
+    measureHiddenTextWidth();
+  }, [globals.currText, editorTextSize])
+
   const punctuation = ['。', '，', '、', '‘', '’', '“', '”', '：', '；', '？', '！', '（', '）', '《', '》' ,'·', '•', '…', '「', '」', '‘', '’', '“', '”', '【', '】']
   
   let [resultTxts, setResultTxts] = useState([]);
@@ -108,31 +122,22 @@ const Editor = () => {
           buildingCharPinyin = "";
           buildingChar += globals.currText[i];
           buildingCharPinyin += purePinyin[i];
-          if (punctuation.includes(globals.currText[i]) || punctuation.includes(globals.currText[i+1])) {
-            buildingChar += globals.currText[i+1]
-            buildingCharPinyin += purePinyin[i+1];
-            i += 2;
-          }
-          else {
-            i++;
-          }
+          i++;
           splitChinese.push(buildingChar)
           splitPinyin.push(buildingCharPinyin)
         }
 
         let chineseWithPinyin = [];
         
-        let numCharsPerRow = Math.floor(windowWidth / (1.2 * editorTextSize * 2.2));
+        let numCharsPerRow = Math.floor(windowWidth / (textWidth*2));
 
-        let numSpacesPerRow = Math.floor(windowWidth / (editorTextSize * 0.48));
-        console.log(numCharsPerRow, numSpacesPerRow)
+        let numSpacesPerRow = Math.floor(windowWidth / (textWidth/2.8));
 
         numSpacesPerRow = numSpacesPerRow - (numCharsPerRow * 2);
         // numSpacesPerRow = 2 * Math.round(numSpacesPerRow / 2); // rounding to an even number 
         
         let numSpacesPerChar = Math.floor(numSpacesPerRow / numCharsPerRow);
         numSpacesPerChar = 2 * Math.round(numSpacesPerChar / 2); // rounding to an even number 
-
 
         let buildingPhrase = ""
         let buildingPinyin = ""
@@ -158,9 +163,6 @@ const Editor = () => {
       else {
         setResultTxts(["Pinyin will appear here... "])
       }
-      
-
-      // setResultTxts(pinyin(globals.currText))
     }
   }
 
@@ -179,7 +181,7 @@ const Editor = () => {
                   className="ml-[8px] max-h-[28px] max-w-[38px]"
                 />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => {setEditorTextSize((editorTextSize) => (editorTextSize + 2 < 88) ? editorTextSize + 2 : 86); textChanged(globals.currText)}}>
+              <TouchableOpacity onPress={() => {setEditorTextSize((editorTextSize) => (editorTextSize + 2 < 58) ? editorTextSize + 2 : 56); textChanged(globals.currText)}}>
                 <Image 
                   source={Icons.plusSquare}
                   tintColor={Colours[globals.theme]["darkerGray"]}
@@ -269,10 +271,24 @@ const Editor = () => {
             keyExtractor={(item, index) => index.toString()}
             renderItem={({item, index}) => (
               <View className='flexGrow-1'>
-                <Text className={'bg-transparent px-3 font-qbold'} style={{ fontSize: editorTextSize, color: "white"}} allowFontScaling={false}>{item}</Text>
+                <Text className={'bg-transparent px-3 text-justify'} style={{ fontSize: editorTextSize, color: "white", fontFamily: 'Arial'}} allowFontScaling={false}>{item}</Text>
               </View>
             )}
           />
+        </View>
+
+        <View
+          style={{position: 'absolute', top:-1000000, left:-1000000}}
+        >
+          <Text
+            ref={hiddenTextRef}
+            className="font-qbold"
+            key={editorTextSize} // force rerender whenever text size is changed
+            style={{fontSize: editorTextSize, color: 'transparent'}}
+            onLayout={measureHiddenTextWidth} // measure width on layout change
+          >
+            爱
+          </Text>
         </View>
 
         <Modal
