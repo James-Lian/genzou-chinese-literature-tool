@@ -7,8 +7,8 @@ import * as Speech from 'expo-speech';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import Toast from 'react-native-root-toast';
 
-import { translate } from '@vitalets/google-translate-api';
 import { pinyin } from "pinyin-pro"
+import { translate } from '@vitalets/google-translate-api';
 
 import * as globals from '../../config/globals.js'
 import { SideMenu } from '../../components'
@@ -24,7 +24,7 @@ const Editor = () => {
   const insets = useSafeAreaInsets();
 
   let windowWidth = Dimensions.get('window').width;
-  windowWidth -= 2 + 6; // accounting for margins and padding
+  windowWidth -= 2 + 12; // accounting for margins and padding
 
   let windowHeight = Dimensions.get('window').height;
   windowHeight -= insets.bottom + insets.top + 48 + 88 + 22
@@ -79,15 +79,17 @@ const Editor = () => {
     }
   }
   
-  const [textWidth, setTextWidth] = useState(0);
+  const [textWidth, setTextWidth] = useState(1);
   const hiddenTextRef = useRef(null);
   const measureHiddenTextWidth = () => {
     if (hiddenTextRef.current) {
       hiddenTextRef.current.measure((fx, fy, width, height, px, py) => {
-        setTextWidth(width+2);
+        setTextWidth(width);
       })
     }
   }
+
+  var numCharsPerRow = Math.floor(windowWidth / (textWidth*2));
 
   useEffect(() => {
     measureHiddenTextWidth();
@@ -108,45 +110,34 @@ const Editor = () => {
       }
     }
     else if (globals.editorModes[globals.currEditorMode] == "Pinyin") {
-      let purePinyin = pinyin(globals.currText.trim()).split(" ")
+      let noSpaces = globals.currText.split(" ").join("")
+      let purePinyin = pinyin(noSpaces).split(" ")
 
       let splitChinese = [];
       let splitPinyin = [];
 
-      if (globals.currText.trim()) {
+      if (noSpaces.trim()) {
         let buildingChar = "";
         let buildingCharPinyin = "";
         let i = 0;
-        while (i < globals.currText.length) {
+        while (i < noSpaces.length) {
           buildingChar = "";
           buildingCharPinyin = "";
-          buildingChar += globals.currText[i];
+          buildingChar += noSpaces[i];
           buildingCharPinyin += purePinyin[i];
-          i++;
           splitChinese.push(buildingChar)
           splitPinyin.push(buildingCharPinyin)
+          i++;
         }
 
         let chineseWithPinyin = [];
         
-        let numCharsPerRow = Math.floor(windowWidth / (textWidth*2));
-
-        let numSpacesPerRow = Math.floor(windowWidth / (textWidth/2.8));
-
-        numSpacesPerRow = numSpacesPerRow - (numCharsPerRow * 2);
-        // numSpacesPerRow = 2 * Math.round(numSpacesPerRow / 2); // rounding to an even number 
-        
-        let numSpacesPerChar = Math.floor(numSpacesPerRow / numCharsPerRow);
-        numSpacesPerChar = 2 * Math.round(numSpacesPerChar / 2); // rounding to an even number 
-
-        let buildingPhrase = ""
-        let buildingPinyin = ""
+        let buildingPhrase = []
+        let buildingPinyin = []
         i = 0;
         for (char of splitChinese) {
-          buildingPhrase += " ".repeat(numSpacesPerChar / 2)
-          buildingPhrase += char;
-          buildingPhrase += " ".repeat(numSpacesPerChar / 2)
-          buildingPinyin += splitPinyin[i]
+          buildingPhrase += char + " ";
+          buildingPinyin += splitPinyin[i] + " "
           if ((i != 0) && (i % numCharsPerRow == numCharsPerRow - 1)) {
             chineseWithPinyin.push(buildingPhrase);
             chineseWithPinyin.push(buildingPinyin);
@@ -251,7 +242,6 @@ const Editor = () => {
                 textAlignVertical={true}
                 allowFontScaling={false}
                 onChangeText={(txt) => {textChanged(txt)}}
-                value={globals.currText}
               />
           </ScrollView>
         </View>
@@ -271,7 +261,22 @@ const Editor = () => {
             keyExtractor={(item, index) => index.toString()}
             renderItem={({item, index}) => (
               <View className='flexGrow-1'>
-                <Text className={'bg-transparent px-3 text-justify'} style={{ fontSize: editorTextSize, color: "white", fontFamily: 'Arial'}} allowFontScaling={false}>{item}</Text>
+                {item == "Translation will appear here... " || item == "Pinyin will appear here... " ? (
+                  <Text className={'bg-transparent px-3 text-justify font-qbold'} style={{ fontSize: editorTextSize, color: "white" }} allowFontScaling={false}>{item}</Text>
+                ): (
+                  <View className='flex-row' style={{width: windowWidth}} key={index}>
+                    {item.split(" ").map((input, subIndex) => (
+                      <View>
+                        {index % 2 == 0 ? (
+                          <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: editorTextSize, color: "white"}} className={'bg-red px-3 font-qbold text-center'} key={subIndex}>{input.trim()}</Text>
+                        ) : (
+                          <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: Math.floor(editorTextSize / 1.8), color: "white", fontFamily:"Arial"}} className={'bg-red text-center'} key={subIndex}>{input.trim()}</Text>
+                        )}
+                      </View>
+                    ))}
+                  </View>
+                  )
+                }
               </View>
             )}
           />
