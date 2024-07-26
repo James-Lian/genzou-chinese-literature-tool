@@ -18,7 +18,8 @@ import minusSquare from '../assets/icons/minus-square.png'
 import volume from '../assets/icons/volume.png'
 import downChevron from '../assets/icons/chevron-down.png'
 import upChevron from '../assets/icons/chevron-up.png'
-
+import clipboard from '../assets/icons/clipboard.png'
+import copy from '../assets/icons/copy.png'
 
 export default { 
     edit, 
@@ -41,4 +42,6 @@ export default {
     volume,
     downChevron,
     upChevron,
+    clipboard,
+    copy,
 };

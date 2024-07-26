@@ -102,8 +102,13 @@ const Editor = () => {
     globals.currText = newTxt;
     if (globals.editorModes[globals.currEditorMode] == "Translation") {
       if (globals.currText.trim()) {
-        const { text } = await translate(globals.currText, { to: 'en' })
-        setResultTxts([text])
+        try {
+          const { text } = await translate(globals.currText, { to: 'en' })
+          setResultTxts([text])
+        }
+        catch {
+          setResultTxts(["Error: TooManyRequests"])
+        }
       }
       else {
         setResultTxts(["Translation will appear here... "])
@@ -234,7 +239,7 @@ const Editor = () => {
           >
               <TextInput 
                 className={`bg-transparent p-3 font-qbold`}
-                key={editorTextSize} // force re-render by changing key
+                key={editorTextSize*2} // force re-render by changing key
                 style={{ fontSize: editorTextSize, color: Colours[globals.theme]["text"] }}
                 placeholder="Enter Chinese text here... "
                 placeholderTextColor={Colours[globals.theme]["gray"]}
@@ -242,6 +247,7 @@ const Editor = () => {
                 textAlignVertical={true}
                 allowFontScaling={false}
                 onChangeText={(txt) => {textChanged(txt)}}
+                defaultValue={globals.currText}
               />
           </ScrollView>
         </View>
@@ -261,16 +267,16 @@ const Editor = () => {
             keyExtractor={(item, index) => index.toString()}
             renderItem={({item, index}) => (
               <View className='flexGrow-1'>
-                {item == "Translation will appear here... " || item == "Pinyin will appear here... " ? (
+                {item == "Translation will appear here... " || item == "Pinyin will appear here... " || item == "Error: TooManyRequests" ? (
                   <Text className={'bg-transparent px-3 text-justify font-qbold'} style={{ fontSize: editorTextSize, color: "white" }} allowFontScaling={false}>{item}</Text>
                 ): (
-                  <View className='flex-row' style={{width: windowWidth}} key={index}>
+                  <View className='flex-row' style={{width: windowWidth}} key={index*8}>
                     {item.split(" ").map((input, subIndex) => (
                       <View>
                         {index % 2 == 0 ? (
-                          <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: editorTextSize, color: "white"}} className={'bg-red px-3 font-qbold text-center'} key={subIndex}>{input.trim()}</Text>
+                          <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: editorTextSize, color: "white"}} className={'bg-red px-3 font-qbold text-center'} key={subIndex*3}>{input.trim()}</Text>
                         ) : (
-                          <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: Math.floor(editorTextSize / 1.8), color: "white", fontFamily:"Arial"}} className={'bg-red text-center'} key={subIndex}>{input.trim()}</Text>
+                          <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: Math.floor(editorTextSize / 1.8), color: "white", fontFamily:"Arial"}} className={'bg-red text-center'} key={subIndex*3}>{input.trim()}</Text>
                         )}
                       </View>
                     ))}
