@@ -11,6 +11,7 @@ import { pinyin } from "pinyin-pro"
 import { translate } from '@vitalets/google-translate-api';
 
 import * as globals from '../../config/globals.js'
+import { Colours } from '../../constants'
 import { SideMenu } from '../../components'
 import { Icons } from '../../constants/index.js'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -276,7 +277,7 @@ const Editor = () => {
                         {index % 2 == 0 ? (
                           <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: editorTextSize, color: "white"}} className={'bg-red px-3 font-qbold text-center'} key={subIndex*3}>{input.trim()}</Text>
                         ) : (
-                          <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: Math.floor(editorTextSize / 1.8), color: "white", fontFamily:"Arial"}} className={'bg-red text-center'} key={subIndex*3}>{input.trim()}</Text>
+                          <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: Math.floor(editorTextSize / 1.8), color: "white", fontFamily:"Arial", fontWeight:"bold"}} className={'bg-red text-center'} key={subIndex*3}>{input.trim()}</Text>
                         )}
                       </View>
                     ))}

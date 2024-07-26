@@ -20,6 +20,8 @@ import downChevron from '../assets/icons/chevron-down.png'
 import upChevron from '../assets/icons/chevron-up.png'
 import clipboard from '../assets/icons/clipboard.png'
 import copy from '../assets/icons/copy.png'
+import x from '../assets/icons/x.png'
+import image from '../assets/icons/image.png'
 
 export default { 
     edit, 
@@ -44,4 +46,6 @@ export default {
     upChevron,
     clipboard,
     copy,
+    x,
+    image,
 };
