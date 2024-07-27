@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, Button, Alert, TouchableOpacity, Image, ScrollView } from 'react-native'
+import { View, Text, SafeAreaView, Button, Alert, TouchableOpacity, Image, ScrollView, Modal, TouchableWithoutFeedback, Dimensions } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import * as ImagePicker from 'expo-image-picker';
 
@@ -8,10 +8,20 @@ import { ImageViewer, WelcomeButton } from '../../components'
 
 import * as globals from '../../config/globals.js'
 import { Colours } from '../../constants'
-import { StatusBar } from 'expo-status-bar';
+
+import MlkitOcr from 'react-native-mlkit-ocr';
+import { router } from 'expo-router'
 
 const Camera = () => {
+  let windowHeight = Dimensions.get('window').height;
+
   const [ userSelectedImage, setUserSelectedImage ] = useState(null);
+  const [ scannedText, setScannedText ] = useState("No text scanned. ")
+
+  const [ confirmDialogOpen, setConfirmDialogOpen ] = useState(false);
+  const toggleConfirmDialog = () => {
+    setConfirmDialogOpen(!confirmDialogOpen);
+  }
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -51,6 +61,13 @@ const Camera = () => {
     }
   }
 
+  const recognizeText = async (uri) => {
+    if (uri) {
+      const resultFromUri = await MlkitOcr.detectFromUri(uri);
+      setScannedText(resultFromUri);
+    }
+  }
+
   return (
     <SafeAreaView className="flex-1 justify-center items-center" style={{backgroundColor: Colours[globals.theme]["background"]}}>
       <View
@@ -59,14 +76,14 @@ const Camera = () => {
         <View className="flex-row justify-center items-center">
             <Text className="text-center font-qbold text-2xl mb-[12px]" style={{color: Colours[globals.theme]["text"]}}>Camera</Text>
             <TouchableOpacity
-                  onPress={() => {setUserSelectedImage(null)}}>
-                  <Image 
-                    source={Icons.x}
-                    tintColor={Colours[globals.theme]["darkerGray"]}
-                    resizeMode='contain'
-                    className="ml-[3px] mb-[6px] max-h-[28px] max-w-[38px]"
-                  />
-                </TouchableOpacity>
+              onPress={() => {setUserSelectedImage(null)}}>
+              <Image 
+                source={Icons.x}
+                tintColor={Colours[globals.theme]["darkerGray"]}
+                resizeMode='contain'
+                className="ml-[3px] mb-[6px] max-h-[28px] max-w-[38px]"
+              />
+            </TouchableOpacity>
           </View>
       </View>
       <View
@@ -117,12 +134,41 @@ const Camera = () => {
                 title="Use this photo"
                 containerStyles="my-[6px] mx-[88px]"
                 textStyles="text-xl text-center"
-                handlePress={pickImageAsync}
+                handlePress={() => recognizeText(userSelectedImage)}
               />
+            </View>
+            <View className="justify-center items-center">
+              <Button title='Test out Modal' onPress={() => {setConfirmDialogOpen(true);}}/>
             </View>
           </View>
         </ScrollView>
       </View>
+
+      <Modal
+        visible={confirmDialogOpen}
+        transparent={true}
+        onRequestClose={toggleConfirmDialog}
+        animationType='slide'
+      >
+        <TouchableWithoutFeedback onPress={toggleConfirmDialog}>
+          <View className="w-full h-full justify-end items-center" style={{backgroundColor: "#00000060"}}>
+            <TouchableWithoutFeedback>
+              <View className="w-full px-[20px] py-[32px]" style={{backgroundColor: Colours[globals.theme]["background"], height: windowHeight * 4/5}}>
+                <Text className="font-qbold text-lg text-center mb-[20px]" style={{color: Colours[globals.theme]["text"]}}>Replace text in Editor with scanned text?</Text>
+                <ScrollView className="rounded-md mb-[12px] p-[12px]" centerContent={true} style={{backgroundColor: Colours[globals.theme]["darker"]}}>
+                  <Text className="font-qnormal text-center">{scannedText}</Text>
+                </ScrollView>
+                <WelcomeButton
+                  title="Confirm"
+                  containerStyles="my-[3px]"
+                  textStyles="text-xl text-center"
+                  handlePress={() => {toggleConfirmDialog(); globals.currText = scannedText; router.replace('/editor')}}
+                />
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </SafeAreaView>
   )
 }
