@@ -7,8 +7,10 @@ export default Colours = {
         darker: "#e4e6eb",
         red: "#d16666",
         indigo: "#968EF6",
+        lighterGray: "#ced0d6",
         gray: "#999fa8",
-        darkerGray: "#90969e"
+        darkerGray: "#90969e",
+        opposite: "#292929"
     },
     dark: {
         text: "#fff",
@@ -16,7 +18,9 @@ export default Colours = {
         darker: "#313233",
         red: "#d16666",
         indigo: "#A8A1F7",
+        lighterGray: "#434445",
         gray: "#7d8799",
-        darkerGray: "#90969e"
+        darkerGray: "#90969e",
+        opposite: "#f9fafc"
     }
 }

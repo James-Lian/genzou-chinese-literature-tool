@@ -22,6 +22,7 @@ import clipboard from '../assets/icons/clipboard.png'
 import copy from '../assets/icons/copy.png'
 import x from '../assets/icons/x.png'
 import image from '../assets/icons/image.png'
+import cornerUpRight from '../assets/icons/corner-up-right.png'
 
 export default { 
     edit, 
@@ -48,4 +49,5 @@ export default {
     copy,
     x,
     image,
+    cornerUpRight,
 };

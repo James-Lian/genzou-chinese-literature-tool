@@ -1,6 +1,7 @@
 import { View, Text, SafeAreaView, Button, Alert, TouchableOpacity, Image, ScrollView, Modal, TouchableWithoutFeedback, Dimensions } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import * as ImagePicker from 'expo-image-picker';
+import { router } from 'expo-router'
 
 import { Images } from '../../constants/index.js'
 import { Icons } from '../../constants/index.js'
@@ -10,7 +11,8 @@ import * as globals from '../../config/globals.js'
 import { Colours } from '../../constants'
 
 import MlkitOcr from 'react-native-mlkit-ocr';
-import { router } from 'expo-router'
+import Toast from 'react-native-root-toast';
+
 
 const Camera = () => {
   let windowHeight = Dimensions.get('window').height;
@@ -65,6 +67,9 @@ const Camera = () => {
     if (uri) {
       const resultFromUri = await MlkitOcr.detectFromUri(uri);
       setScannedText(resultFromUri);
+      setConfirmDialogOpen(true);
+    } else {
+      let toast = Toast.show('Error: invalid image.', { hideOnPress: true, duration: Toast.durations.SHORT, position: Dimensions.get('window').height - 180 - Math.max((keyboardHeight - 100), 0), backgroundColor: Colours[globals.theme]["opposite"] , shadowColor: Colours[globals.theme]["darkerGray"] })
     }
   }
 

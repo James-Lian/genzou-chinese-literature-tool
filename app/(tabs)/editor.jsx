@@ -1,4 +1,5 @@
-import { View, Text, Button, Animated, ScrollView, Image, TouchableOpacity, TextInput, Dimensions, PanResponder, Modal, TouchableWithoutFeedback, StyleSheet, FlatList } from 'react-native'
+import { router } from 'expo-router'
+import { View, Text, Button, Animated, ScrollView, Image, TouchableOpacity, TextInput, Dimensions, PanResponder, Modal, TouchableWithoutFeedback, StyleSheet, FlatList, Keyboard, KeyboardEvent } from 'react-native'
 import React, { useRef, useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import SelectDropdown from 'react-native-select-dropdown'
@@ -9,6 +10,7 @@ import Toast from 'react-native-root-toast';
 
 import { pinyin } from "pinyin-pro"
 import { translate } from '@vitalets/google-translate-api';
+import * as Clipboard from 'expo-clipboard';
 
 import * as globals from '../../config/globals.js'
 import { Colours } from '../../constants'
@@ -17,6 +19,11 @@ import { Icons } from '../../constants/index.js'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Editor = () => {
+
+  const [textSelection, setTextSelection] = useState({ start: 0, end: 0})
+  const handleSelectionChange = ({ nativeEvent: { selection } }) => {
+    setTextSelection(selection);
+  };
   
   const minScrollHeight = 30;
   const firstScroll = useRef()
@@ -67,6 +74,26 @@ const Editor = () => {
 
   let [editorTextSize, setEditorTextSize] = useState(22)
 
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+  const onKeyboardShow = (event) => {
+    setKeyboardHeight(event.endCoordinates.height);
+  }
+
+  const onKeyboardHide = () => {
+    setKeyboardHeight(0);
+  }
+
+  useEffect(() => {
+    const onShow = Keyboard.addListener('keyboardDidShow', onKeyboardShow);
+    const onHide = Keyboard.addListener('keyboardDidHide', onKeyboardHide);
+
+    return () => {
+      onShow.remove();
+      onHide.remove();
+    };
+  }, []);
+
   let [speaking, setSpeaking] = useState(false);
   const toggleSpeaking = () => {
     if (speaking) {
@@ -75,8 +102,14 @@ const Editor = () => {
     }
     else {
       setSpeaking(true)
-      let toast = Toast.show('Ensure silent mode is off on your device to use TTS.', { duration: Toast.durations.SHORT }) // set position above keyboard? https://ashwin1014.medium.com/get-height-of-keyboard-on-your-react-native-app-d6fd4b27ccc7
-      Speech.speak(globals.currText, {language:globals.voices[globals.currVoice], onDone:() => setSpeaking(false)})
+      let toast = Toast.show('Ensure silent mode is off on your device to use TTS.', { hideOnPress: true, duration: 1200, position: Dimensions.get('window').height - 180 - Math.max((keyboardHeight - 100), 0), backgroundColor: Colours[globals.theme]["opposite"] , shadowColor: Colours[globals.theme]["darkerGray"] })
+      
+      if (textSelection.start == textSelection.end) {
+        Speech.speak(globals.currText, {language:globals.voices[globals.currVoice], onDone:() => setSpeaking(false)})
+      }
+      else {
+        Speech.speak(globals.currText.slice(textSelection.start, textSelection.end), {language:globals.voices[globals.currVoice], onDone:() => setSpeaking(false)})
+      }
     }
   }
   
@@ -163,24 +196,110 @@ const Editor = () => {
     }
   }
 
+  const copyToClipboard = async () => {
+    await Clipboard.setStringAsync(globals.currText.slice(textSelection.start, textSelection.end))
+    let toast = Toast.show('Copied!', { hideOnPress: true, duration: 1200, position: Dimensions.get('window').height - 180 - Math.max((keyboardHeight - 120), 0), backgroundColor: Colours[globals.theme]["opposite"] , shadowColor: Colours[globals.theme]["darkerGray"] })
+  }
+
   return (
     <RootSiblingParent>
       <SafeAreaView className="flex-1 items-center h-full" style={{backgroundColor: Colours[globals.theme]["background"]}}>
-        <View className="w-full flex-row justify-center items-center max-h-[48px] px-3">
-          <View className="flex-1 justify-center">
-            <View className="flex-row justify-start items-center gap-[12px]">
+        <View>
+          {textSelection.start == textSelection.end ? (
+            <View className="w-full flex-row justify-center items-center max-h-[48px] px-3">
+              <View className="flex-1 justify-center">
+                <View className="flex-row justify-start items-center gap-[8px]">
+                  <TouchableOpacity
+                    onPress={() => {setEditorTextSize((editorTextSize) => (editorTextSize - 2 > 10) ? editorTextSize - 2 : 12); textChanged(globals.currText)}}>
+                    <Image 
+                      source={Icons.minusSquare}
+                      tintColor={Colours[globals.theme]["darkerGray"]}
+                      resizeMode='contain'
+                      className="ml-[8px] max-h-[28px] max-w-[38px]"
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => {setEditorTextSize((editorTextSize) => (editorTextSize + 2 < 58) ? editorTextSize + 2 : 56); textChanged(globals.currText)}}>
+                    <Image 
+                      source={Icons.plusSquare}
+                      tintColor={Colours[globals.theme]["darkerGray"]}
+                      resizeMode='contain'
+                      className="max-h-[28px] max-w-[38px]"
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {toggleSpeaking()}}
+                  >
+                    <Image 
+                      source={Icons.volume}
+                      tintColor={Colours[globals.theme]["darkerGray"]}
+                      resizeMode='contain'
+                      className="max-h-[28px] max-w-[38px]"
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <View className="flex-1 justify-center">
+                <View className="flex-row justify-end items-center gap-[12px]">
+                  <TouchableOpacity
+                    onPress={() => {}}
+                  >
+                    <Image 
+                      source={Icons.download}
+                      tintColor={Colours[globals.theme]["darkerGray"]}
+                      resizeMode='contain'
+                      className="max-h-[28px] max-w-[38px]"
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => router.replace('/camera')}
+                  >
+                    <Image 
+                      source={Icons.camera}
+                      tintColor={Colours[globals.theme]["darkerGray"]}
+                      resizeMode='contain'
+                      className="max-h-[28px] max-w-[38px]"
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {setMoreOptionsOpen(true);}}
+                  >
+                    <Image 
+                      source={Icons.more}
+                      tintColor={Colours[globals.theme]["darkerGray"]}
+                      resizeMode='contain'
+                      className="max-h-[28px] max-w-[38px]"
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          ) : (
+            <View className="min-w-full flex-row justify-center items-center max-h-[48px] px-3" style={{gap: windowWidth / 10}}>
               <TouchableOpacity
-                onPress={() => {setEditorTextSize((editorTextSize) => (editorTextSize - 2 > 10) ? editorTextSize - 2 : 12); textChanged(globals.currText)}}>
+                // onPress={}
+              >
                 <Image 
-                  source={Icons.minusSquare}
+                  source={Icons.cornerUpRight}
                   tintColor={Colours[globals.theme]["darkerGray"]}
                   resizeMode='contain'
-                  className="ml-[8px] max-h-[28px] max-w-[38px]"
+                  className="max-h-[28px] max-w-[38px]"
                 />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => {setEditorTextSize((editorTextSize) => (editorTextSize + 2 < 58) ? editorTextSize + 2 : 56); textChanged(globals.currText)}}>
+              <TouchableOpacity
+                // onPress={}
+              >
                 <Image 
-                  source={Icons.plusSquare}
+                  source={Icons.search}
+                  tintColor={Colours[globals.theme]["darkerGray"]}
+                  resizeMode='contain'
+                  className="max-h-[28px] max-w-[38px]"
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                // onPress={}
+              >
+                <Image 
+                  source={Icons.plusCircle}
                   tintColor={Colours[globals.theme]["darkerGray"]}
                   resizeMode='contain'
                   className="max-h-[28px] max-w-[38px]"
@@ -196,46 +315,25 @@ const Editor = () => {
                   className="max-h-[28px] max-w-[38px]"
                 />
               </TouchableOpacity>
-            </View>
-          </View>
-          <View className="flex-1 justify-center">
-            <View className="flex-row justify-end items-center gap-[12px]">
               <TouchableOpacity
-                onPress={() => {}}
+                onPress={copyToClipboard}
               >
                 <Image 
-                  source={Icons.download}
-                  tintColor={Colours[globals.theme]["darkerGray"]}
-                  resizeMode='contain'
-                  className="max-h-[28px] max-w-[38px]"
-                />
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Image 
-                  source={Icons.camera}
-                  tintColor={Colours[globals.theme]["darkerGray"]}
-                  resizeMode='contain'
-                  className="max-h-[28px] max-w-[38px]"
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {setMoreOptionsOpen(true);}}
-              >
-                <Image 
-                  source={Icons.more}
+                  source={Icons.copy}
                   tintColor={Colours[globals.theme]["darkerGray"]}
                   resizeMode='contain'
                   className="max-h-[28px] max-w-[38px]"
                 />
               </TouchableOpacity>
             </View>
-          </View>
+          )}
         </View>
 
-        <View className="my-1 flexGrow-1 w-full px-2">
+        <View className="my-1 w-full px-2">
           <ScrollView
             ref={firstScroll}
             className="rounded-lg w-full"
+            contentContainerStyle={{flexGrow: 1}}
             style={{backgroundColor: Colours[globals.theme]["darker"], maxHeight:topHeight, minHeight:topHeight}}
           >
               <TextInput 
@@ -248,6 +346,8 @@ const Editor = () => {
                 textAlignVertical={true}
                 allowFontScaling={false}
                 onChangeText={(txt) => {textChanged(txt)}}
+                onSelectionChange={handleSelectionChange}
+                onBlur={() => setTextSelection({ start: 0, end: 0 })}
                 defaultValue={globals.currText}
               />
           </ScrollView>
@@ -258,26 +358,28 @@ const Editor = () => {
           <View {...panResponder.panHandlers} className="flex mx-3 py-1 rounded-lg" style={{backgroundColor: Colours[globals.theme]["darkerGray"]}} />
         </View>
 
-        <View className="my-1 flexGrow-1 w-full px-2">
+        <View className="my-1 w-full px-2 flex-1">
           <FlatList
             ref={secondScroll}
             className="rounded-lg py-3"
+            contentContainerStyle={{flexGrow: 1}} // enables full scrolling to the bottom, instead of flex-1
             style={{backgroundColor: Colours[globals.theme]["indigo"], maxHeight:bottomHeight, minHeight:bottomHeight}}
             scrollEnabled={true}
             data={resultTxts}
-            keyExtractor={(item, index) => index.toString()}
+            ListFooterComponent={<View style={{height: 30}} />}
+            keyExtractor={(item, index) => index}
             renderItem={({item, index}) => (
               <View className='flexGrow-1'>
                 {item == "Translation will appear here... " || item == "Pinyin will appear here... " || item == "Error: TooManyRequests" ? (
-                  <Text className={'bg-transparent px-3 text-justify font-qbold'} style={{ fontSize: editorTextSize, color: "white" }} allowFontScaling={false}>{item}</Text>
+                  <Text className={'bg-transparent px-3 font-qbold'} style={{ fontSize: editorTextSize, color: "white" }} allowFontScaling={false}>{item}</Text>
                 ): (
-                  <View className='flex-row' style={{width: windowWidth}} key={index*8}>
+                  <View className='flex-row' style={{width: windowWidth, maxWidth: windowWidth}} key={index*8}>
                     {item.split(" ").map((input, subIndex) => (
                       <View>
                         {index % 2 == 0 ? (
-                          <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: editorTextSize, color: "white"}} className={'bg-red px-3 font-qbold text-center'} key={subIndex*3}>{input.trim()}</Text>
+                          <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: editorTextSize, color: "white"}} className={'px-3 font-qbold text-center'} key={subIndex*3}>{input.trim()}</Text>
                         ) : (
-                          <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: Math.floor(editorTextSize / 1.8), color: "white", fontFamily:"Arial", fontWeight:"bold"}} className={'bg-red text-center'} key={subIndex*3}>{input.trim()}</Text>
+                          <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: Math.floor(editorTextSize / 1.8), color: "white", fontFamily:"Arial", fontWeight:"bold"}} className='text-center' key={subIndex*3}>{input.trim()}</Text>
                         )}
                       </View>
                     ))}
