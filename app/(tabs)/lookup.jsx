@@ -1,17 +1,61 @@
 import { View, Text, SafeAreaView, TextInput, FlatList, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
-
-import Cedict from 'cedict-lookup';
+import React, { useState, useEffect } from 'react'
 
 import * as globals from '../../config/globals.js'
 import { Colours } from '../../constants'
 
+import { Asset } from "expo-asset";
+import * as FileSystem from 'expo-file-system';
+
+const readFile = async () => {
+  const { localUri } = await Asset.fromModule(require("../../assets/files/cedict_ts.txt")).downloadAsync();
+
+  const dict = await FileSystem.readAsStringAsync(localUri)
+  return dict
+}
+
 const Lookup = () => {
   const [searchMode, setSearchMode] = useState("CH")
-  
-  var dict = Cedict.loadSimplified().getMatch('你好')
 
-  console.log(dict)
+  let dictionary = ""
+  
+  useEffect(() => {
+    const fetchDict = async () => {
+      dictionary = await readFile()
+      dictionary = dictionary.split('\n').filter(line => line && !line.startsWith("#")).map(line => {
+        line = line.trim()
+
+        let entries = []
+
+        let buildingEntry = ""
+        let withinTerm = false
+        for (let i = 0; i < line.length; i++) {
+          if (line[i] === "[" || (line[i] === "/" && i != line.length - 1)) {
+            withinTerm = true
+          } else if (line[i] === "]") {
+            withinTerm = false
+          }
+
+          if (line[i] === " " && withinTerm === false) {
+            entries.push(buildingEntry)
+            buildingEntry = ""
+          }
+          else {
+            buildingEntry += line[i]
+          }
+        }
+        entries.push(buildingEntry)
+        return {
+          traditional: entries[0].trim(),
+          simplified: entries[1].trim(),
+          pinyin: entries[2].trim(),
+          definitions: entries[3].split("/").join("\n").trim()
+        }
+      })
+    }
+
+    fetchDict()
+  }, [])
 
   return (
     <SafeAreaView>

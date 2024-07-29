@@ -37,7 +37,8 @@
           "photosPermission": "Allow Genzou to access your photos",
           "cameraPermission": "Allow Genzou to access your camera"
         }
-      ]
+      ],
+      "expo-asset"
     ],
     "extra": {
       "router": {
