@@ -6,14 +6,17 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "node": "20.15.1"
+      "node": "20.15.1",
+      "channel": "development"
     },
     "preview": {
       "distribution": "internal",
-      "node": "20.15.1"
+      "node": "20.15.1",
+      "channel": "preview"
     },
     "production": {
-      "node": "20.15.1"
+      "node": "20.15.1",
+      "channel": "production"
     }
   },
   "submit": {

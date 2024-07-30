@@ -373,7 +373,7 @@ const Editor = () => {
                 {item == "Translation will appear here... " || item == "Pinyin will appear here... " || item == "Error: TooManyRequests" ? (
                   <Text className={'bg-transparent px-3 font-qbold'} style={{ fontSize: editorTextSize, color: "white" }} allowFontScaling={false}>{item}</Text>
                 ): (
-                  <View className='flex-row' style={{width: windowWidth, maxWidth: windowWidth}} key={index*8}>
+                  <View className='flex-row' style={{width: windowWidth, maxWidth: windowWidth}} key={index*8000}>
                     {item.split(" ").map((input, subIndex) => (
                       <View>
                         {index % 2 == 0 ? (
