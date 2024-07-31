@@ -21,8 +21,9 @@ const RootLayout = () => {
 
     return (
         <Stack>
-            <Stack.Screen name="index" options={{ headerShown: false}} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false}} />
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false, title: 'back' }} />
+            <Stack.Screen name="entry" options={{ title: 'Dictionary 字典' }} />
         </Stack>
     )
 }

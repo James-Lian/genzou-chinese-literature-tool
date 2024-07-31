@@ -10,7 +10,8 @@ export default Colours = {
         lighterGray: "#ced0d6",
         gray: "#999fa8",
         darkerGray: "#90969e",
-        opposite: "#292929"
+        opposite: "#292929",
+        lighterOpposite: "#4a474d"
     },
     dark: {
         text: "#fff",
@@ -21,6 +22,7 @@ export default Colours = {
         lighterGray: "#434445",
         gray: "#7d8799",
         darkerGray: "#90969e",
-        opposite: "#f9fafc"
+        opposite: "#f9fafc",
+        lighterOpposite: "#d5d7db"
     }
 }

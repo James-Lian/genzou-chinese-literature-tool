@@ -5,8 +5,6 @@ import * as globals from '../../config/globals.js'
 import { Colours } from '../../constants'
 import { Icons } from '../../constants/index.js'
 
-import { Asset } from "expo-asset";
-import * as FileSystem from 'expo-file-system';
 import { router, useLocalSearchParams } from 'expo-router';
 
 import { SideMenu } from '../../components'
@@ -76,7 +74,6 @@ const Lookup = () => {
   }
 
   const sortEngResults = (retrievedResults, exactQuery) => {
-    console.log('happened')
     const arrayWithExactMatches = []
     const arrayWithCloseMatches = []
     const arrayWithoutExactMatches = []
@@ -112,7 +109,6 @@ const Lookup = () => {
           )
           
           if (filterResults.length != 0) {
-            console.log('uhhh')
             setSearchResults(sortChiResults(filterResults, query))
 
           } else {
@@ -215,7 +211,10 @@ const Lookup = () => {
                   <Text className={'bg-transparent px-3 font-qbold'} style={{ fontSize: 22, color: Colours[globals.theme]["text"] }} allowFontScaling={false}>{entry.item}</Text>
                 </View>
               ) : (
-                <TouchableOpacity className="flexGrow-1 my-[2px]">
+                <TouchableOpacity 
+                  className="flexGrow-1 my-[2px]"
+                  onPress={() => {router.push('/entry?entryInfo=' + JSON.stringify(entry.item))}}
+                >
                   <View className="flexGrow-1 py-[3px]" style={{borderBottomWidth: 1, borderColor:"black"}}>
                     <Text numberOfLines={1} className={'bg-transparent px-3 font-bold'} style={{ fontSize: 23, color: Colours[globals.theme]["text"] }} allowFontScaling={false}>
                       {entry.item.simplified}<Text className="font-normal">{(entry.item.simplified == entry.item.traditional ? "" : " [" + entry.item.traditional + "]")} {PinyinTones(entry.item.pinyin.replace("[", "").replace("]", ""))}</Text>

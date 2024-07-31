@@ -296,7 +296,7 @@ const Editor = () => {
                 // onPress={}
               >
                 <Image 
-                  source={Icons.plusCircle}
+                  source={Icons.plus}
                   tintColor={Colours[globals.theme]["darkerGray"]}
                   resizeMode='contain'
                   className="max-h-[28px] max-w-[38px]"

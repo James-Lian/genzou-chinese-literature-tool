@@ -23,6 +23,8 @@ import copy from '../assets/icons/copy.png'
 import x from '../assets/icons/x.png'
 import image from '../assets/icons/image.png'
 import cornerUpRight from '../assets/icons/corner-up-right.png'
+import plus from '../assets/icons/plus.png'
+import minus from '../assets/icons/minus.png'
 
 export default { 
     edit, 
@@ -50,4 +52,6 @@ export default {
     x,
     image,
     cornerUpRight,
+    plus,
+    minus
 };
