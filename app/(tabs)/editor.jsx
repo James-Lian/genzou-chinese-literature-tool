@@ -19,7 +19,6 @@ import { Icons } from '../../constants/index.js'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Editor = () => {
-
   const [textSelection, setTextSelection] = useState({ start: 0, end: 0})
   const handleSelectionChange = ({ nativeEvent: { selection } }) => {
     setTextSelection(selection);
@@ -118,7 +117,7 @@ const Editor = () => {
   const measureHiddenTextWidth = () => {
     if (hiddenTextRef.current) {
       hiddenTextRef.current.measure((fx, fy, width, height, px, py) => {
-        setTextWidth(width);
+        setTextWidth(width+2);
       })
     }
   }
@@ -128,8 +127,6 @@ const Editor = () => {
   useEffect(() => {
     measureHiddenTextWidth();
   }, [globals.currText, editorTextSize])
-
-  const punctuation = ['。', '，', '、', '‘', '’', '“', '”', '：', '；', '？', '！', '（', '）', '《', '》' ,'·', '•', '…', '「', '」', '‘', '’', '“', '”', '【', '】']
   
   let [resultTxts, setResultTxts] = useState([]);
   const textChanged = async (newTxt) => {
@@ -286,7 +283,7 @@ const Editor = () => {
                 />
               </TouchableOpacity>
               <TouchableOpacity
-                // onPress={}
+                onPress={() => {router.replace('/lookup?editorQuery=' + globals.currText.slice(textSelection.start, textSelection.end));}}
               >
                 <Image 
                   source={Icons.search}
@@ -377,7 +374,7 @@ const Editor = () => {
                     {item.split(" ").map((input, subIndex) => (
                       <View>
                         {index % 2 == 0 ? (
-                          <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: editorTextSize, color: "white"}} className={'px-3 font-qbold text-center'} key={subIndex*9000000}>{input.trim()}</Text>
+                          <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: editorTextSize, color: "white"}} className={'px-3 font-qbold text-center'} key={subIndex*1000000}>{input.trim()}</Text>
                         ) : (
                           <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: Math.floor(editorTextSize / 1.8), color: "white", fontFamily:"Arial", fontWeight:"bold"}} className='text-center' key={subIndex*3}>{input.trim()}</Text>
                         )}

@@ -7,6 +7,7 @@ import { Icons } from '../../constants/index.js'
 
 import { Asset } from "expo-asset";
 import * as FileSystem from 'expo-file-system';
+import { router, useLocalSearchParams } from 'expo-router';
 
 import { SideMenu } from '../../components'
 import SelectDropdown from 'react-native-select-dropdown'
@@ -20,65 +21,26 @@ function isAlphanumeric(str) {
 }
 
 const Lookup = () => {
+  const { editorQuery } = useLocalSearchParams();
+
+  // useEffect(() => {
+  //   if (editorQuery) {
+  //     router.replace('/lookup');
+  //   }
+  // }, [editorQuery])
+
   const [searchQuery, setSearchQuery] = useState("")
   const [searchMode, setSearchMode] = useState("CH")
   const [searchResults, setSearchResults] = useState("")
   
   const searchDepthOptions = ["start with", "contain"]
   const [searchDepth, setSearchDepth] = useState(0)
-  
-  const [dictionary, setDictionary] = useState("")
-  
-  const readFile = async () => {
-    const { localUri } = await Asset.fromModule(require("../../assets/files/cedict_ts.txt")).downloadAsync();
-  
-    let dict = await FileSystem.readAsStringAsync(localUri)
-    dict = dict.split('\n').filter(line => line && !line.startsWith("#")).map(line => {
-      line = line.trim()
-
-      let entries = []
-
-      let buildingEntry = ""
-      let withinTerm = false
-      for (let i = 0; i < line.length; i++) {
-        if (line[i] === "[" || (line[i] === "/" && i != line.length - 1)) {
-          withinTerm = true
-        } else if (line[i] === "]") {
-          withinTerm = false
-        }
-        
-        if (line[i] === " " && withinTerm === false) {
-          entries.push(buildingEntry)
-          buildingEntry = ""
-        }
-        else {
-          buildingEntry += line[i]
-        }
-      }
-      entries.push(buildingEntry)
-      return {
-        traditional: entries[0].trim(),
-        simplified: entries[1].trim(),
-        pinyin: entries[2].trim(),
-        definitions: entries[3].trim().split("/").filter(def => def != "")  //.join("\n").trim()
-      }
-    })
-    setDictionary(dict)
-  }
-
-  useEffect(() => {
-    const fetchDict = async () => {
-      await readFile()
-    }
-    fetchDict()
-  }, [])
 
   useEffect(() => {
     search(searchQuery);
   }, [searchDepth, searchMode])
 
   const matchInQuery = (arrDefinitions, exactQuery) => {
-    const matched = []
     for (let item of arrDefinitions) {
       if (item.split(" ").includes(exactQuery)) {
         return true
@@ -87,7 +49,34 @@ const Lookup = () => {
     return false
   }
 
+  const sortChiResults = (retrievedResults, exactQuery) => {
+    const arrayWithExactMatches = []
+    const arrayWithoutExactMatches = []
+    
+    const arraySortedByLength = JSON.parse(JSON.stringify(retrievedResults));
+    arraySortedByLength.sort((a, b) => b.simplified.length - a.simplified.length)
+    
+    const longestEntry = arraySortedByLength[0].simplified.length
+    
+    for (let i=0; i < longestEntry; i++) {
+      const filteredResultsLength = retrievedResults.filter(res => res.simplified.length == i)
+      arrayWithExactMatches.push(...filteredResultsLength.filter(res => 
+        res.traditional.toLowerCase().startsWith(exactQuery) ||
+        res.simplified.toLowerCase().startsWith(exactQuery) ||
+        res.pinyin.replace("[", "").replace("]", "").replace(/[0-9]/g, '').split(" ").includes(exactQuery) // includes the EXACT pinyin word (e.g. 'lan' will return pinyin results with the 'lan' pinyin word)
+      ))
+      arrayWithoutExactMatches.push(...filteredResultsLength.filter(res => 
+        res.traditional.toLowerCase().includes(exactQuery) ||
+        res.simplified.toLowerCase().includes(exactQuery) ||
+        (res.pinyin.replace("[", "").replace("]", "").replace(/[0-9]/g, '').split(" ").join("").includes(exactQuery) && !res.pinyin.replace("[", "").replace("]", "").replace(/[0-9]/g, '').split(" ").includes(exactQuery)) // includes CLOSE MATCHES of the pinyin word (e.g. 'lan' could return pinyin results with 'lan', but also 'lang')
+      ))
+    }
+    
+    return arrayWithExactMatches.concat(arrayWithoutExactMatches)
+  }
+
   const sortEngResults = (retrievedResults, exactQuery) => {
+    console.log('happened')
     const arrayWithExactMatches = []
     const arrayWithCloseMatches = []
     const arrayWithoutExactMatches = []
@@ -116,27 +105,28 @@ const Lookup = () => {
     if (query) {
       if (searchMode == "CH") {
         if (searchDepthOptions[searchDepth] == "start with") {
-          const filterResults = dictionary.filter(entry => 
+          const filterResults = globals.dictionary.filter(entry => 
             entry.traditional.toLowerCase().startsWith(query) || 
             entry.simplified.toLowerCase().startsWith(query) || 
             entry.pinyin.toLowerCase().replace("[", "").replace("]", "").replace(/[0-9]/g, '').split(" ").join("").startsWith(query) // replace square brackets [], any numbers, and any spaces in between the pinyin entries
           )
           
           if (filterResults.length != 0) {
-            setSearchResults(filterResults.sort((a, b) => a.simplified.length - b.simplified.length))
+            console.log('uhhh')
+            setSearchResults(sortChiResults(filterResults, query))
 
           } else {
             setSearchResults(["No results found."])
           }
         } else if (searchDepthOptions[searchDepth] == "contain") {
-          const filterResults = dictionary.filter(entry => 
+          const filterResults = globals.dictionary.filter(entry => 
             entry.traditional.toLowerCase().includes(query) || 
             entry.simplified.toLowerCase().includes(query) || 
             entry.pinyin.toLowerCase().replace("[", "").replace("]", "").replace(/[0-9]/g, '').split(" ").join("").includes(query)
           )
 
           if (filterResults.length != 0) {
-            setSearchResults(filterResults.sort((a, b) => a.simplified.length - b.simplified.length))
+            setSearchResults(sortChiResults(filterResults, query))
           } else {
             setSearchResults(["No results found."])
           }
@@ -144,7 +134,7 @@ const Lookup = () => {
       }
       else if (searchMode == "EN") {
         if (isAlphanumeric(query.split(" ").join(""))) {
-          const filterResults = dictionary.filter(entry =>
+          const filterResults = globals.dictionary.filter(entry =>
             entry.definitions.join("\n").toLowerCase().includes(query)
           )
           
@@ -159,7 +149,13 @@ const Lookup = () => {
         }
       }
     }
+  }
+
+  useEffect(() => {
+    if (editorQuery && globals.dictionary) {
+      search(editorQuery)
     }
+  }, [editorQuery])
 
   const [lookupOptionsOpen, setLookupOptionsOpen] = useState(false)
   const toggleLookupOptions = () => {
@@ -175,6 +171,7 @@ const Lookup = () => {
         >
           <TextInput
             autoCapitalize='none'
+            autoCorrect={false}
             className="px-[10px] rounded-lg font-qnormal"
             style={{flex: 1, fontSize: 20, color: Colours[globals.theme]["text"]}}
             placeholder='Search'
