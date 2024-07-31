@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, TextInput, FlatList, TouchableOpacity, Modal, StyleSheet, TouchableWithoutFeedback, Image } from 'react-native'
+import { View, Text, SafeAreaView, TextInput, FlatList, TouchableOpacity, Modal, StyleSheet, TouchableWithoutFeedback, Image, Touchable } from 'react-native'
 import React, { useState, useEffect } from 'react'
 
 import * as globals from '../../config/globals.js'
@@ -10,6 +10,8 @@ import * as FileSystem from 'expo-file-system';
 
 import { SideMenu } from '../../components'
 import SelectDropdown from 'react-native-select-dropdown'
+
+import PinyinTones from 'pinyin-tone'
 
 function isAlphanumeric(str) {
   const alphanumericRegex = /^[a-z0-9]+$/i;
@@ -70,45 +72,57 @@ const Lookup = () => {
     }
     fetchDict()
   }, [])
+
+  useEffect(() => {
+    search(searchQuery);
+  }, [searchDepth])
   
   const search = (query) => {
-    setSearchQuery(query);
+    query = query.split(" ").join("").toLowerCase() // removing spaces from user's query
+
+    setSearchQuery(query); // prompting re-render
+
     query = query.toLowerCase().trim();
     if (query) {
       if (searchMode == "CH") {
         if (searchDepthOptions[searchDepth] == "start with") {
-          setSearchResults(
-            (dictionary.filter(entry =>
-            entry.traditional.toLowerCase().startsWith(query) ||
-            entry.simplified.toLowerCase().startsWith(query) ||
-            entry.pinyin.toLowerCase().startsWith(query)).length != 0)
-              ? dictionary.filter(entry =>
-            entry.traditional.toLowerCase().startsWith(query) ||
-            entry.simplified.toLowerCase().startsWith(query) ||
-            entry.pinyin.toLowerCase().startsWith(query)).sort((a, b) => a.simplified.length - b.simplified.length)
-              : ["No results found."])
+          const filterResults = dictionary.filter(entry => 
+            entry.traditional.toLowerCase().startsWith(query) || 
+            entry.simplified.toLowerCase().startsWith(query) || 
+            entry.pinyin.toLowerCase().replace("[", "").replace("]", "").replace(/[0-9]/g, '').split(" ").join("").startsWith(query) // replace square brackets [], any numbers, and any spaces in between the pinyin entries
+          )
+          
+          if (filterResults.length != 0) {
+            setSearchResults(filterResults.sort((a, b) => a.simplified.length - b.simplified.length))
+
+          } else {
+            setSearchResults(["No results found."])
+          }
         } else if (searchDepthOptions[searchDepth] == "contain") {
-          setSearchResults(
-            (dictionary.filter(entry =>
-            entry.traditional.toLowerCase().includes(query) ||
-            entry.simplified.toLowerCase().includes(query) ||
-            entry.pinyin.toLowerCase().includes(query)).length != 0)
-              ? dictionary.filter(entry =>
-            entry.traditional.toLowerCase().includes(query) ||
-            entry.simplified.toLowerCase().includes(query) ||
-            entry.pinyin.toLowerCase().includes(query)).sort((a, b) => a.simplified.length - b.simplified.length)
-              : ["No results found."])
+          const filterResults = dictionary.filter(entry => 
+            entry.traditional.toLowerCase().includes(query) || 
+            entry.simplified.toLowerCase().includes(query) || 
+            entry.pinyin.toLowerCase().replace("[", "").replace("]", "").replace(/[0-9]/g, '').split(" ").join("").includes(query)
+          )
+
+          if (filterResults.length != 0) {
+            setSearchResults(filterResults.sort((a, b) => a.simplified.length - b.simplified.length))
+          } else {
+            setSearchResults(["No results found."])
+          }
         }
       }
       else if (searchMode == "EN") {
         if (isAlphanumeric(query.split(" ").join(""))) {
-          setSearchResults(
-            (dictionary.filter(entry =>
-            entry.definitions.join("\n").toLowerCase().includes(query)).length != 0) 
-              ? (dictionary.filter(entry =>
+          const filterResults = dictionary.filter(entry =>
             entry.definitions.join("\n").toLowerCase().includes(query)
-          ).sort((a, b) => a.simplified.length - b.simplified.length))
-              : ["No results found."])
+          )
+
+          if (filterResults.length != 0) {
+            setSearchResults(filterResults.sort((a, b) => a.simplified.length - b.simplified.length))
+          } else {
+            setSearchResults(["No results found."])
+          }
         }
         else {
           setSearchResults(["You're on the English mode right now; try searching for English words."])
@@ -172,9 +186,11 @@ const Lookup = () => {
                   <Text className={'bg-transparent px-3 font-qbold'} style={{ fontSize: 22, color: Colours[globals.theme]["text"] }} allowFontScaling={false}>{entry.item}</Text>
                 </View>
               ) : (
-                <View className="flexGrow-1">
-                  <Text className={'bg-transparent px-3 font-qbold'} style={{ fontSize: 22, color: Colours[globals.theme]["text"] }} allowFontScaling={false}>{entry.item.simplified}</Text>
-                </View>
+                <TouchableOpacity className="flexGrow-1 my-[2px]">
+                  <View className="flexGrow-1">
+                    <Text className={'bg-transparent px-3 font-bold'} style={{ fontSize: 23, color: Colours[globals.theme]["text"] }} allowFontScaling={false}>{entry.item.simplified}<Text className="font-normal">{(entry.item.simplified == entry.item.traditional ? "" : " [" + entry.item.traditional + "]")} {PinyinTones(entry.item.pinyin.replace("[", "").replace("]", ""))}</Text></Text>
+                  </View>
+                </TouchableOpacity>
               ) }
             </View>
           )}
@@ -197,8 +213,7 @@ const Lookup = () => {
                       data={searchDepthOptions}
                       defaultValueByIndex={searchDepth}
                       onSelect={(selectedItem, index) => {
-                        setSearchDepth(index);
-                        setSearchQuery(searchQuery); // prompt re-render
+                        setSearchDepth(index); // and prompting rerender
                       }}
                       renderButton={(selectedItem, isOpened) => {
                         return (
