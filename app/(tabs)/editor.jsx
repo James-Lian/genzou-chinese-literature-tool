@@ -377,7 +377,7 @@ const Editor = () => {
                     {item.split(" ").map((input, subIndex) => (
                       <View>
                         {index % 2 == 0 ? (
-                          <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: editorTextSize, color: "white"}} className={'px-3 font-qbold text-center'} key={subIndex*3}>{input.trim()}</Text>
+                          <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: editorTextSize, color: "white"}} className={'px-3 font-qbold text-center'} key={subIndex*9000000}>{input.trim()}</Text>
                         ) : (
                           <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: Math.floor(editorTextSize / 1.8), color: "white", fontFamily:"Arial", fontWeight:"bold"}} className='text-center' key={subIndex*3}>{input.trim()}</Text>
                         )}

@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, TextInput, FlatList, TouchableOpacity, Modal, StyleSheet, TouchableWithoutFeedback, Image, Touchable } from 'react-native'
+import { View, Text, SafeAreaView, TextInput, FlatList, TouchableOpacity, Modal, StyleSheet, TouchableWithoutFeedback, Image, Touchable, Keyboard } from 'react-native'
 import React, { useState, useEffect } from 'react'
 
 import * as globals from '../../config/globals.js'
@@ -60,7 +60,7 @@ const Lookup = () => {
         traditional: entries[0].trim(),
         simplified: entries[1].trim(),
         pinyin: entries[2].trim(),
-        definitions: entries[3].trim().split("/")  //.join("\n").trim()
+        definitions: entries[3].trim().split("/").filter(def => def != "")  //.join("\n").trim()
       }
     })
     setDictionary(dict)
@@ -75,7 +75,37 @@ const Lookup = () => {
 
   useEffect(() => {
     search(searchQuery);
-  }, [searchDepth])
+  }, [searchDepth, searchMode])
+
+  const matchInQuery = (arrDefinitions, exactQuery) => {
+    const matched = []
+    for (let item of arrDefinitions) {
+      if (item.split(" ").includes(exactQuery)) {
+        return true
+      }
+    }
+    return false
+  }
+
+  const sortEngResults = (retrievedResults, exactQuery) => {
+    const arrayWithExactMatches = []
+    const arrayWithCloseMatches = []
+    const arrayWithoutExactMatches = []
+
+    const arraySortedByLength = JSON.parse(JSON.stringify(retrievedResults));
+    arraySortedByLength.sort((a, b) => b.simplified.length - a.simplified.length)
+
+    const longestEntry = arraySortedByLength[0].simplified.length
+
+    for (let i=0; i < longestEntry; i++) {
+      const filteredResultsLength = retrievedResults.filter(res => res.simplified.length == i)
+      arrayWithExactMatches.push(...filteredResultsLength.filter(res => res.definitions.map(w => w.toLowerCase()).includes(exactQuery)))
+      arrayWithCloseMatches.push(...filteredResultsLength.filter(res => matchInQuery(res.definitions.map(w => w.toLowerCase()), exactQuery)))
+      arrayWithoutExactMatches.push(...filteredResultsLength.filter(res => !res.definitions.map(w => w.toLowerCase()).includes(exactQuery) && !matchInQuery(res.definitions.map(w => w.toLowerCase()), exactQuery)))
+    }
+
+    return arrayWithExactMatches.concat(arrayWithCloseMatches.concat(arrayWithoutExactMatches))
+  }
   
   const search = (query) => {
     query = query.split(" ").join("").toLowerCase() // removing spaces from user's query
@@ -117,9 +147,9 @@ const Lookup = () => {
           const filterResults = dictionary.filter(entry =>
             entry.definitions.join("\n").toLowerCase().includes(query)
           )
-
+          
           if (filterResults.length != 0) {
-            setSearchResults(filterResults.sort((a, b) => a.simplified.length - b.simplified.length))
+            setSearchResults(sortEngResults(filterResults, query))
           } else {
             setSearchResults(["No results found."])
           }
@@ -144,6 +174,7 @@ const Lookup = () => {
           style={{flex:1, backgroundColor:Colours[globals.theme]["darker"]}}
         >
           <TextInput
+            autoCapitalize='none'
             className="px-[10px] rounded-lg font-qnormal"
             style={{flex: 1, fontSize: 20, color: Colours[globals.theme]["text"]}}
             placeholder='Search'
@@ -174,8 +205,9 @@ const Lookup = () => {
       <View className="min-h-full min-w-full" style={{backgroundColor: Colours[globals.theme]["darker"]}}>
         <FlatList
           scrollEnabled={true}
+          onScrollBeginDrag={() => {Keyboard.dismiss()}}
           contentContainerStyle={{flexGrow: 1}}
-          ListHeaderComponent={<View style={{height: 10}} />}
+          ListHeaderComponent={<View style={{height: 8}} />}
           ListFooterComponent={<View style={{height: 168}} />}
           data={searchResults}
           keyExtractor={(item, index) => index}
@@ -187,11 +219,14 @@ const Lookup = () => {
                 </View>
               ) : (
                 <TouchableOpacity className="flexGrow-1 my-[2px]">
-                  <View className="flexGrow-1">
-                    <Text className={'bg-transparent px-3 font-bold'} style={{ fontSize: 23, color: Colours[globals.theme]["text"] }} allowFontScaling={false}>{entry.item.simplified}<Text className="font-normal">{(entry.item.simplified == entry.item.traditional ? "" : " [" + entry.item.traditional + "]")} {PinyinTones(entry.item.pinyin.replace("[", "").replace("]", ""))}</Text></Text>
+                  <View className="flexGrow-1 py-[3px]" style={{borderBottomWidth: 1, borderColor:"black"}}>
+                    <Text numberOfLines={1} className={'bg-transparent px-3 font-bold'} style={{ fontSize: 23, color: Colours[globals.theme]["text"] }} allowFontScaling={false}>
+                      {entry.item.simplified}<Text className="font-normal">{(entry.item.simplified == entry.item.traditional ? "" : " [" + entry.item.traditional + "]")} {PinyinTones(entry.item.pinyin.replace("[", "").replace("]", ""))}</Text>
+                    </Text>
+                    <Text numberOfLines={1} className={'bg-transparent px-3 font-normal mt-[1px] mb-[3px]'}>{entry.item.definitions.join(" / ")}</Text>
                   </View>
                 </TouchableOpacity>
-              ) }
+              )}
             </View>
           )}
         />
