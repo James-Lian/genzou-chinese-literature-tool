@@ -1,5 +1,5 @@
 import { View, Text, SafeAreaView, TextInput, FlatList, TouchableOpacity, Modal, StyleSheet, TouchableWithoutFeedback, Image, Touchable, Keyboard } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 
 import * as globals from '../../config/globals.js'
 import { Colours } from '../../constants'
@@ -11,6 +11,7 @@ import { SideMenu } from '../../components'
 import SelectDropdown from 'react-native-select-dropdown'
 
 import PinyinTones from 'pinyin-tone'
+import { debounce } from 'lodash';
 
 function isAlphanumeric(str) {
   const alphanumericRegex = /^[a-z0-9]+$/i;
@@ -19,13 +20,8 @@ function isAlphanumeric(str) {
 }
 
 const Lookup = () => {
-  const { editorQuery } = useLocalSearchParams();
 
-  // useEffect(() => {
-  //   if (editorQuery) {
-  //     router.replace('/lookup');
-  //   }
-  // }, [editorQuery])
+  const { editorQuery } = useLocalSearchParams();
 
   const [searchQuery, setSearchQuery] = useState("")
   const [searchMode, setSearchMode] = useState("CH")
@@ -57,7 +53,7 @@ const Lookup = () => {
     const longestEntry = arraySortedByLength[0].simplified.length
     
     for (let i=0; i < longestEntry; i++) {
-      const filteredResultsLength = retrievedResults.filter(res => res.simplified.length == i)
+      const filteredResultsLength = retrievedResults.filter(res => res.simplified.length == i+1)
       arrayWithExactMatches.push(...filteredResultsLength.filter(res => 
         res.traditional.toLowerCase().startsWith(exactQuery) ||
         res.simplified.toLowerCase().startsWith(exactQuery) ||
@@ -84,7 +80,7 @@ const Lookup = () => {
     const longestEntry = arraySortedByLength[0].simplified.length
 
     for (let i=0; i < longestEntry; i++) {
-      const filteredResultsLength = retrievedResults.filter(res => res.simplified.length == i)
+      const filteredResultsLength = retrievedResults.filter(res => res.simplified.length == i+1)
       arrayWithExactMatches.push(...filteredResultsLength.filter(res => res.definitions.map(w => w.toLowerCase()).includes(exactQuery)))
       arrayWithCloseMatches.push(...filteredResultsLength.filter(res => matchInQuery(res.definitions.map(w => w.toLowerCase()), exactQuery)))
       arrayWithoutExactMatches.push(...filteredResultsLength.filter(res => !res.definitions.map(w => w.toLowerCase()).includes(exactQuery) && !matchInQuery(res.definitions.map(w => w.toLowerCase()), exactQuery)))
@@ -147,6 +143,10 @@ const Lookup = () => {
     }
   }
 
+  const debouncedSearch = useCallback(
+    debounce(search, 180), [],
+  );
+
   useEffect(() => {
     if (editorQuery && globals.dictionary) {
       search(editorQuery)
@@ -173,7 +173,7 @@ const Lookup = () => {
             placeholder='Search'
             placeholderTextColor={Colours[globals.theme]["gray"]}
             allowFontScaling={false}
-            onChangeText={(txt) => {search(txt)}}
+            onChangeText={(txt) => {debouncedSearch(txt)}}
             clearButtonMode='always'
           />
         </View>

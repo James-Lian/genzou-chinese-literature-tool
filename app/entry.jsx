@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Image, Dimensions, Keyboard } from 'react-native'
+import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Image, Dimensions, Keyboard, FlatList } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { useLocalSearchParams } from 'expo-router';
 
@@ -59,20 +59,22 @@ const Entry = () => {
             <Text className="font-normal" style={{color: Colours[globals.theme]["lighterOpposite"]}}> {entryInfo.simplified == entryInfo.traditional ? "" : ('[' + entryInfo.traditional + ']')}</Text>
           </Text>
           <View className="flex-row gap-[3px]" style={{height: 42}}>
-            <Text className="py-[2px] px-[1px] text-lg" style={{color: Colours[globals.theme]["text"]}}>{PinyinTones(entryInfo.pinyin.replace("[", "").replace("]", ""))}</Text>
+            <Text className="py-[2px] px-[1px] font-bold text-lg" style={{color: Colours[globals.theme]["text"]}}>{PinyinTones(entryInfo.pinyin.replace("[", "").replace("]", ""))}</Text>
             <TouchableOpacity
-                  onPress={() => {toggleSpeaking()}}
-                  className="justify-center"
-                >
-                  <Image 
-                    source={Icons.volume}
-                    tintColor={Colours[globals.theme]["darkerGray"]}
-                    resizeMode='contain'
-                    className="max-h-[20px] max-w-[38px]"
-                  />
-                </TouchableOpacity>
+              onPress={() => {toggleSpeaking()}}
+              className="justify-center"
+            >
+              <Image 
+                source={Icons.volume}
+                tintColor={Colours[globals.theme]["darkerGray"]}
+                resizeMode='contain'
+                className="max-h-[20px] max-w-[38px]"
+              />
+            </TouchableOpacity>
           </View>
-          <View className="w-full h-[2px] rounded-lg" style={{backgroundColor: Colours[globals.theme]["text"]}}></View>
+          <View className="w-full h-[2px] rounded-lg mb-2" style={{backgroundColor: Colours[globals.theme]["text"]}}></View>
+          <Text className="text-lg">
+            {entryInfo.definitions.map((elem, ind) => String(ind+1) + "\t" + String(elem)).join("\n")}</Text>
         </ScrollView>
       </SafeAreaView>
     </RootSiblingParent>
