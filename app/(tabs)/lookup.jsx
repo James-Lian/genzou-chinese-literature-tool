@@ -13,6 +13,7 @@ import SelectDropdown from 'react-native-select-dropdown'
 import PinyinTones from 'pinyin-tone'
 import { debounce } from 'lodash';
 
+
 function isAlphanumeric(str) {
   const alphanumericRegex = /^[a-z0-9]+$/i;
 
@@ -149,7 +150,7 @@ const Lookup = () => {
   }
 
   const debouncedSearch = useCallback(
-    debounce(search, 180), [],
+    debounce(search, 200), [],
   );
 
   useEffect(() => {
@@ -209,7 +210,7 @@ const Lookup = () => {
           ListHeaderComponent={<View style={{height: 8}} />}
           ListFooterComponent={<View style={{height: 168}} />}
           data={searchResults}
-          keyExtractor={(item, index) => index}
+          keyExtractor={(item) => item.id}
           renderItem={(entry) => (
             <View className="flexGrow-1">
               {entry.item == "You're on the English mode right now; try searching for English words." || entry.item == "No results found." ? (

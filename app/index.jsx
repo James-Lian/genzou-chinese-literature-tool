@@ -13,7 +13,6 @@ import { Icons } from "../constants"
 import { WelcomeButton } from '../components'
 
 export default function App() {
-  globals.theme = (useColorScheme() == "light" || useColorScheme() == "dark") ? useColorScheme() : "light";
   // globals.theme = "dark"; // testing out dark theme
 
   return (
@@ -25,7 +24,7 @@ export default function App() {
       <ScrollView className="rounded-lg pt-3 shadow-inner" style={{backgroundColor: Colours[globals.theme]["darker"]}}>
         <Text className="text-[18px] font-qitalic my-2 px-6" style={{color: Colours[globals.theme]["text"]}}>Discover our features... </Text>
 
-        <View className="flex-1 m-2 h-full p-4 rounded-lg shadow" style={{backgroundColor: "white"}}>
+        <View className="flex-1 m-2 h-full p-4 rounded-lg shadow" style={{backgroundColor: Colours[globals.theme]["background"]}}>
           <View className="flex-row my-1 items-start">
             <View className="items-center w-fit h-fit self-start max-h-[48px] rounded-lg" style={{backgroundColor: Colours[globals.theme]["indigo"]}}>
               <Image

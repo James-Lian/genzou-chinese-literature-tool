@@ -364,7 +364,7 @@ const Editor = () => {
             scrollEnabled={true}
             data={resultTxts}
             ListFooterComponent={<View style={{height: 30}} />}
-            keyExtractor={(item, index) => index}
+            keyExtractor={(item) => item.id}
             renderItem={({item, index}) => (
               <View className='flexGrow-1'>
                 {item == "Translation will appear here... " || item == "Pinyin will appear here... " || item == "Error: TooManyRequests" ? (

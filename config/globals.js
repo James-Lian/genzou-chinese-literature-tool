@@ -1,8 +1,31 @@
-// for storing settings variables, etc. 
+// AsyncStorage for storing information...
+/*
+@bookmarks: for saving phrases and terms (object)
+@files: for saving editor text (object)
+@history: for saving search history (object: {dict (list), search (list)})
+@system-info: for saving system info like themes and stuff (object: {welcomed, theme, prevText, currVoice})
+*/
 
-// async storage?
+import AsyncStorage from '@react-native-async-storage/async-storage';
+export const storeData = async (value, key) => {
+    try {
+        const jsonValue = JSON.stringify(value);
+        await AsyncStorage.setItem(key, jsonValue)
+    } catch (e) {
+        console.log(e)
+    }
+}
 
-// true for light theme, false for dark theme
+export const getData = async (key) => {
+    try{
+        const jsonValue = await AsyncStorage.getItem(key);
+        return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+// config and ux variables
 export var theme = "light";
 
 export var currText = ""; // "你还不赶紧练习？玲玲每天练40小时，他五岁已经当上了医生！";
@@ -16,9 +39,8 @@ export const editorModes = [
 ]
 export var currEditorMode = 0;
 
-export var previousScrollTop = null;
-export var previousScrollBottom = null;
 
+// Reading cedict_ts.txt (CC-CEDICT) dictionary file:
 import { Asset } from "expo-asset";
 import * as FileSystem from 'expo-file-system';
 

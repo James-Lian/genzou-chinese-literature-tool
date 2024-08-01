@@ -56,8 +56,8 @@ const Entry = () => {
       <SafeAreaView>
         <ScrollView className="w-full h-full p-3 my-1">
           <View className="flex-row justify-center">
-            <Text className="font-bold text-3xl flex-1" style={{height: 43, color: Colours[globals.theme]["text"]}}>{entryInfo.simplified}
-              <Text className="font-normal" style={{color: Colours[globals.theme]["lighterOpposite"]}}> {entryInfo.simplified == entryInfo.traditional ? "" : ('[' + entryInfo.traditional + ']')}</Text>
+            <Text selectable={true} className="font-bold text-3xl flex-1" style={{height: 43, color: Colours[globals.theme]["text"]}}>{entryInfo.simplified}
+              <Text selectable={true} className="font-normal" style={{color: Colours[globals.theme]["lighterOpposite"]}}> {entryInfo.simplified == entryInfo.traditional ? "" : ('[' + entryInfo.traditional + ']')}</Text>
             </Text>
             <TouchableOpacity
               onPress={() => {}}
@@ -73,7 +73,7 @@ const Entry = () => {
             </TouchableOpacity>
           </View>
           <View className="flex-row gap-[3px]" style={{height: 42}}>
-            <Text className="py-[2px] px-[1px] font-bold text-lg" style={{color: Colours[globals.theme]["text"]}}>{PinyinTones(entryInfo.pinyin.replace("[", "").replace("]", ""))}</Text>
+            <Text selectable={true} className="py-[2px] px-[1px] font-bold text-lg" style={{color: Colours[globals.theme]["text"]}}>{PinyinTones(entryInfo.pinyin.replace("[", "").replace("]", ""))}</Text>
             <TouchableOpacity
               onPress={() => {toggleSpeaking()}}
               className="justify-center"
@@ -87,7 +87,7 @@ const Entry = () => {
             </TouchableOpacity>
           </View>
           <View className="w-full h-[2px] rounded-lg mb-2" style={{backgroundColor: Colours[globals.theme]["text"]}}></View>
-          <Text className="text-lg">
+          <Text selectable={true} className="text-lg">
             {entryInfo.definitions.map((elem, ind) => String(ind+1) + "\t" + String(elem)).join("\n")}</Text>
         </ScrollView>
       </SafeAreaView>
