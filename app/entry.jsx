@@ -13,7 +13,7 @@ import Toast from 'react-native-root-toast';
 import PinyinTones from 'pinyin-tone'
 
 const Entry = () => {
-  let { entryInfo } = useLocalSearchParams()
+  let { entryInfo } = useLocalSearchParams() // Change to array-compatible
 
   entryInfo = JSON.parse(entryInfo)
 

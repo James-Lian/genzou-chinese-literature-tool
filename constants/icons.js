@@ -25,6 +25,8 @@ import image from '../assets/icons/image.png'
 import cornerUpRight from '../assets/icons/corner-up-right.png'
 import plus from '../assets/icons/plus.png'
 import minus from '../assets/icons/minus.png'
+import circle from '../assets/icons/circle.png'
+import checkCircle from '../assets/icons/check-circle.png'
 
 export default { 
     edit, 
@@ -53,5 +55,7 @@ export default {
     image,
     cornerUpRight,
     plus,
-    minus
+    minus,
+    circle,
+    checkCircle,
 };

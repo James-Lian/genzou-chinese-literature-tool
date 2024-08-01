@@ -210,7 +210,7 @@ const Lookup = () => {
           ListHeaderComponent={<View style={{height: 8}} />}
           ListFooterComponent={<View style={{height: 168}} />}
           data={searchResults}
-          keyExtractor={(item) => {item}}
+          keyExtractor={(item) => {item.item}}
           renderItem={(entry) => (
             <View className="flexGrow-1">
               {entry.item == "You're on the English mode right now; try searching for English words." || entry.item == "No results found." ? (
@@ -220,9 +220,9 @@ const Lookup = () => {
               ) : (
                 <TouchableOpacity 
                   className="flexGrow-1 my-[2px]"
-                  onPress={() => {router.push('/entry?entryInfo=' + JSON.stringify(entry.item))}}
+                  onPress={() => {router.push('/entry?entryInfo=' + JSON.stringify([entry.item]))}}
                 >
-                  <View className="flexGrow-1 py-[3px]" style={{borderBottomWidth: 1, borderColor:"black"}}>
+                  <View className="flexGrow-1 py-[3px]" style={{borderBottomWidth: 1, borderColor: Colours[globals.theme]["text"]}}>
                     <Text numberOfLines={1} className={'bg-transparent px-3 font-bold'} style={{ fontSize: 23, color: Colours[globals.theme]["text"] }} allowFontScaling={false}>
                       {entry.item.simplified}<Text className="font-normal">{(entry.item.simplified == entry.item.traditional ? "" : " [" + entry.item.traditional + "]")} {PinyinTones(entry.item.pinyin.replace("[", "").replace("]", ""))}</Text>
                     </Text>

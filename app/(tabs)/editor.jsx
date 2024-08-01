@@ -286,7 +286,25 @@ const Editor = () => {
           ) : (
             <View className="min-w-full flex-row justify-center items-center max-h-[48px] px-3" style={{gap: windowWidth / 10}}>
               <TouchableOpacity
-                // onPress={}
+                onPress={() => {
+                  if (
+                    globals.returnDictEntry(
+                      globals.currText.slice(textSelection.start, textSelection.end), 
+                      pinyin(globals.currText.split(" ").join("")).split(" ").slice(textSelection.start, textSelection.end)
+                    )
+                  ) {
+                    router.push(
+                      '/entry?entryInfo=' + 
+                      JSON.stringify([
+                        globals.returnDictEntry(
+                          globals.currText.slice(textSelection.start, textSelection.end), 
+                          pinyin(globals.currText.split(" ").join("")).split(" ").slice(textSelection.start, textSelection.end)
+                        )
+                      ])
+                    )
+                  }
+                }}
+                disabled={!existsInDictionary}
               >
                 <Image 
                   source={Icons.cornerUpRight}
@@ -310,8 +328,10 @@ const Editor = () => {
                   if (existsInDictionary && !existsInStorage) {
                     globals.setBookmark(globals.currText.slice(textSelection.start, textSelection.end), "Uncategorized")
                   }
+                  setExistsInStorage(true)
                 }}
                 disabled={!existsInDictionary || existsInStorage}
+                key={existsInStorage}
               >
                 <Image 
                   source={Icons.plus}
