@@ -55,9 +55,23 @@ const Entry = () => {
     <RootSiblingParent>
       <SafeAreaView>
         <ScrollView className="w-full h-full p-3 my-1">
-          <Text className="font-bold text-3xl" style={{color: Colours[globals.theme]["text"]}}>{entryInfo.simplified}
-            <Text className="font-normal" style={{color: Colours[globals.theme]["lighterOpposite"]}}> {entryInfo.simplified == entryInfo.traditional ? "" : ('[' + entryInfo.traditional + ']')}</Text>
-          </Text>
+          <View className="flex-row justify-center">
+            <Text className="font-bold text-3xl flex-1" style={{height: 43, color: Colours[globals.theme]["text"]}}>{entryInfo.simplified}
+              <Text className="font-normal" style={{color: Colours[globals.theme]["lighterOpposite"]}}> {entryInfo.simplified == entryInfo.traditional ? "" : ('[' + entryInfo.traditional + ']')}</Text>
+            </Text>
+            <TouchableOpacity
+              onPress={() => {}}
+              className="pt-1"
+              style={{height: 32}}
+            >
+              <Image 
+                source={Icons.plus}
+                tintColor={Colours[globals.theme]["darkerGray"]}
+                resizeMode='contain'
+                className="max-h-[32px] max-w-[38px]"
+              />
+            </TouchableOpacity>
+          </View>
           <View className="flex-row gap-[3px]" style={{height: 42}}>
             <Text className="py-[2px] px-[1px] font-bold text-lg" style={{color: Colours[globals.theme]["text"]}}>{PinyinTones(entryInfo.pinyin.replace("[", "").replace("]", ""))}</Text>
             <TouchableOpacity

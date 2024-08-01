@@ -45,6 +45,7 @@ const Lookup = () => {
 
   const sortChiResults = (retrievedResults, exactQuery) => {
     const arrayWithExactMatches = []
+    const arrayWithCloseMatches = []
     const arrayWithoutExactMatches = []
     
     const arraySortedByLength = JSON.parse(JSON.stringify(retrievedResults));
@@ -57,16 +58,20 @@ const Lookup = () => {
       arrayWithExactMatches.push(...filteredResultsLength.filter(res => 
         res.traditional.toLowerCase().startsWith(exactQuery) ||
         res.simplified.toLowerCase().startsWith(exactQuery) ||
-        res.pinyin.replace("[", "").replace("]", "").replace(/[0-9]/g, '').split(" ").includes(exactQuery) // includes the EXACT pinyin word (e.g. 'lan' will return pinyin results with the 'lan' pinyin word)
+        res.pinyin.replace("[", "").replace("]", "").replace(/[0-9]/g, '').split(" ").join("").trim() == exactQuery.trim() // equals the EXACT pinyin word(s) (e.g. 'lan' will return pinyin results with the 'lan' pinyin word)
       ))
+      arrayWithCloseMatches.push(
+        ...filteredResultsLength.filter(res => 
+          res.pinyin.replace("[", "").replace("]", "").replace(/[0-9]/g, '').split(" ").includes(exactQuery) && !arrayWithExactMatches.includes(res)
+      )) // for pinyin only, in cases where there is a single pinyin word, and there is an exact match within a phrase, idiom, or expression
       arrayWithoutExactMatches.push(...filteredResultsLength.filter(res => 
         res.traditional.toLowerCase().includes(exactQuery) ||
         res.simplified.toLowerCase().includes(exactQuery) ||
-        (res.pinyin.replace("[", "").replace("]", "").replace(/[0-9]/g, '').split(" ").join("").includes(exactQuery) && !res.pinyin.replace("[", "").replace("]", "").replace(/[0-9]/g, '').split(" ").includes(exactQuery)) // includes CLOSE MATCHES of the pinyin word (e.g. 'lan' could return pinyin results with 'lan', but also 'lang')
+        (res.pinyin.replace("[", "").replace("]", "").replace(/[0-9]/g, '').split(" ").join("").includes(exactQuery) && !arrayWithExactMatches.includes(res) && !arrayWithCloseMatches.includes(res)) // includes somewhat close matches of the pinyin word (e.g. 'lan' could return pinyin results with 'lan', but also 'lang')
       ))
     }
     
-    return arrayWithExactMatches.concat(arrayWithoutExactMatches)
+    return arrayWithExactMatches.concat(arrayWithCloseMatches.concat(arrayWithoutExactMatches))
   }
 
   const sortEngResults = (retrievedResults, exactQuery) => {
@@ -149,7 +154,7 @@ const Lookup = () => {
 
   useEffect(() => {
     if (editorQuery && globals.dictionary) {
-      search(editorQuery)
+      search(editorQuery);
     }
   }, [editorQuery])
 
@@ -166,6 +171,7 @@ const Lookup = () => {
           style={{flex:1, backgroundColor:Colours[globals.theme]["darker"]}}
         >
           <TextInput
+            value={searchQuery}
             autoCapitalize='none'
             autoCorrect={false}
             className="px-[10px] rounded-lg font-qnormal"
@@ -173,7 +179,7 @@ const Lookup = () => {
             placeholder='Search'
             placeholderTextColor={Colours[globals.theme]["gray"]}
             allowFontScaling={false}
-            onChangeText={(txt) => {debouncedSearch(txt)}}
+            onChangeText={(txt) => {setSearchQuery(txt); debouncedSearch(txt)}}
             clearButtonMode='always'
           />
         </View>
@@ -240,6 +246,11 @@ const Lookup = () => {
                   <SideMenu>
                     <Text className="font-qnormal text-2xl" style={{color: Colours[globals.theme]["text"]}}>Lookup Options</Text>
                     <View className="w-full h-0.5 my-3 rounded" style={{backgroundColor: Colours[globals.theme]["text"]}} />
+                    <Text
+                      className="font-qnormal text-lg mb-1"
+                    >
+                      Search for entries that... 
+                    </Text>
                     <SelectDropdown
                       data={searchDepthOptions}
                       defaultValueByIndex={searchDepth}
@@ -274,6 +285,11 @@ const Lookup = () => {
                       showsVerticalScrollIndicator={false}
                       dropdownStyle={styles.dropdownMenuStyle}
                     />
+                    <Text
+                      className="font-qnormal text-lg text-right"
+                    >
+                      ... your keywords
+                    </Text>
                     <View className="my-1"></View>
                   </SideMenu>
                 </View>
