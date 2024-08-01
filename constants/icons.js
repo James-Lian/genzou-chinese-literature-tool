@@ -27,6 +27,8 @@ import plus from '../assets/icons/plus.png'
 import minus from '../assets/icons/minus.png'
 import circle from '../assets/icons/circle.png'
 import checkCircle from '../assets/icons/check-circle.png'
+import folderNew from '../assets/icons/folder-plus.png'
+import folder from '../assets/icons/folder.png'
 
 export default { 
     edit, 
@@ -58,4 +60,6 @@ export default {
     minus,
     circle,
     checkCircle,
+    folderNew,
+    folder
 };
