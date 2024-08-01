@@ -10,13 +10,20 @@ const SavedTerms = () => {
 
   const retrieveFolders = async () => {
     const bookmarkFolders = await globals.getData("bookmarks")
-    setFolders(...bookmarkFolders)
-    console.log(bookmarkFolders)
+    if (bookmarkFolders) {
+      console.log("Retrieved folder: ", Object.entries(bookmarkFolders).map(([k,v]) => ({[k]: v})))
+      setFolders(
+        Object.entries(bookmarkFolders).map(([k,v]) => ({[k]: v}))
+      )
+    }
   }
-  retrieveFolders()
+
+  useEffect(() => {
+    retrieveFolders()
+  }, [])
 
   const storeFolders = async () => {
-    globals.storeData(folders)
+    globals.storeData(folders, "bookmarks")
   }
 
   return (
@@ -27,7 +34,7 @@ const SavedTerms = () => {
         ListHeaderComponent={<View style={{height: 8}} />}
         ListFooterComponent={<View style={{height: 168}} />}
         data={folders}
-        keyExtractor = {(item) => item.id}
+        keyExtractor = {(item) => {item}}
         renderItem={(item) => {
           console.log(item);
         }}

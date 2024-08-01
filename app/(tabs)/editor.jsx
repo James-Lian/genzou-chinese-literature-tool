@@ -19,9 +19,22 @@ import { Icons } from '../../constants/index.js'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Editor = () => {
+  const [existsInStorage, setExistsInStorage] = useState(false);
+  const [existsInDictionary, setExistsInDictionary] = useState(false);
+
   const [textSelection, setTextSelection] = useState({ start: 0, end: 0})
+
+  const selectionBookmarkandStorage = async (selection) => {
+    if (selection.start != selection.end) {
+      const bmExists = await globals.bookmarkExists(globals.currText.slice(selection.start, selection.end), "Uncategorized")
+      setExistsInStorage(bmExists);
+      setExistsInDictionary(globals.dictEntryExists(globals.currText.slice(selection.start, selection.end)));
+    }
+  }
   const handleSelectionChange = ({ nativeEvent: { selection } }) => {
     setTextSelection(selection);
+
+    selectionBookmarkandStorage(selection)
   };
   
   const minScrollHeight = 30;
@@ -293,11 +306,16 @@ const Editor = () => {
                 />
               </TouchableOpacity>
               <TouchableOpacity
-                // onPress={}
+                onPress={() => {
+                  if (existsInDictionary && !existsInStorage) {
+                    globals.setBookmark(globals.currText.slice(textSelection.start, textSelection.end), "Uncategorized")
+                  }
+                }}
+                disabled={!existsInDictionary || existsInStorage}
               >
                 <Image 
                   source={Icons.plus}
-                  tintColor={Colours[globals.theme]["darkerGray"]}
+                  tintColor={(existsInDictionary && !existsInStorage) ? Colours[globals.theme]["darkerGray"] : Colours[globals.theme]["lighterGray"]}
                   resizeMode='contain'
                   className="max-h-[28px] max-w-[38px]"
                 />
@@ -364,7 +382,7 @@ const Editor = () => {
             scrollEnabled={true}
             data={resultTxts}
             ListFooterComponent={<View style={{height: 30}} />}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => {item}}
             renderItem={({item, index}) => (
               <View className='flexGrow-1'>
                 {item == "Translation will appear here... " || item == "Pinyin will appear here... " || item == "Error: TooManyRequests" ? (

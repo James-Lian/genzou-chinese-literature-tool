@@ -1,12 +1,28 @@
 // AsyncStorage for storing information...
 /*
-@bookmarks: for saving phrases and terms (object)
+@bookmarks: for saving phrases and terms (object: {uncategorized: []})
 @files: for saving editor text (object)
 @history: for saving search history (object: {dict (list), search (list)})
 @system-info: for saving system info like themes and stuff (object: {welcomed, theme, prevText, currVoice})
 */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export const clearAllData = () => {
+    AsyncStorage.clear()
+}
+
+export const getAllData = async () => {
+    const keys = await AsyncStorage.getAllKeys();
+    let results = []
+    for (let key of keys) {
+        let result = await getData(key)
+        results.push(result)
+    }
+
+    return results
+}
+
 export const storeData = async (value, key) => {
     try {
         const jsonValue = JSON.stringify(value);
@@ -23,6 +39,44 @@ export const getData = async (key) => {
     } catch (e) {
         return null;
     }
+}
+
+export const bookmarkExists = async (value, folder) => {
+    const bookmarkData = await getData("bookmarks")
+    
+    if (bookmarkData) {
+        if (bookmarkData[folder]) {
+            if (bookmarkData[folder].includes(value)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+export const setBookmark = async (value, folder) => {
+    let bookmarkData = await getData("bookmarks")
+    if (bookmarkData) {
+        if (bookmarkData.hasOwnProperty(folder)) {
+            bookmarkData[folder].push(value)
+        }
+        else {
+            bookmarkData[folder] = [value]
+        }
+    }
+    else {
+        console.log('happening')
+        bookmarkData = {[folder]: [value]}
+    }
+    storeData(bookmarkData, "bookmarks")
+}
+
+export const delBookmark = async (value, folder) => {
+    let bookmarkData = await getData("bookmarks")
+    const index = bookmarkData[folder].indexOf(value)
+    bookmarkData[folder].splice(index, 1)
+    storeData(bookmarkData, "bookmarks")
 }
 
 // config and ux variables
@@ -83,3 +137,12 @@ const readFile = async () => {
 
 export var dictionary = null;
 readFile().then(val => { dictionary = val });
+
+export const dictEntryExists = (value) => {
+    for (entry of dictionary) {
+        if (entry.traditional == value || entry.simplified == value) {
+            return true;
+        }
+    }
+    return false;
+}
