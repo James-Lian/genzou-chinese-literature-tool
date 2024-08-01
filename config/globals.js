@@ -66,7 +66,6 @@ export const setBookmark = async (value, folder) => {
         }
     }
     else {
-        console.log('happening')
         bookmarkData = {[folder]: [value]}
     }
     storeData(bookmarkData, "bookmarks")

@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, FlatList } from 'react-native'
+import { View, Text, SafeAreaView, FlatList, TouchableOpacity } from 'react-native'
 import React, { useState, useEffect } from 'react'
 
 import * as globals from '../../config/globals.js'
@@ -9,7 +9,6 @@ import { router, useLocalSearchParams } from 'expo-router';
 
 const SavedTerms = () => {
   const [folders, setFolders] = useState([])
-
   const [selectedFolders, setSelectedFolders] = useState([])
 
   const retrieveFolders = async () => {
@@ -38,22 +37,21 @@ const SavedTerms = () => {
         ListHeaderComponent={<View style={{height: 8}} />}
         ListFooterComponent={<View style={{height: 168}} />}
         data={folders}
-        keyExtractor = {(item) => {item}}
+        keyExtractor = {(item) => {Object.keys(item)[0]}}
         renderItem={(item) => {
-          <View className="flexGrow-1">
+          <View className="flexGrow-1 min-w-full min-h-full bg-black">
+            {console.log(Object.keys(item.item)[0])}
             <TouchableOpacity 
               className="flexGrow-1 my-[2px]"
               onPress={() => {router.push("/bookmark-entries?entryList=" + JSON.stringify(folders[item]))}}
             >
               <View className="flexGrow-1 py-[3px]" style={{borderBottomWidth: 1, borderColor: Colours[globals.theme]["text"]}}>
                 <Text numberOfLines={1} className={'bg-transparent px-3 font-bold'} style={{ fontSize: 23, color: Colours[globals.theme]["text"] }} allowFontScaling={false}>
-                  {Object.keys(item)[0]}
+                  {Object.keys(item.item)[0]}
                 </Text>
-                <Text numberOfLines={1} className={'bg-transparent px-3 font-normal mt-[1px] mb-[3px]'}>{entry.item.definitions.join(" / ")}</Text>
               </View>
             </TouchableOpacity>
           </View>
-          // console.log(item);
         }}
       />
       <Text>SavedTerms</Text>

@@ -9,6 +9,7 @@ import { Icons } from '../constants/index.js'
 import * as Speech from 'expo-speech';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import Toast from 'react-native-root-toast';
+import * as Clipboard from 'expo-clipboard';
 
 import PinyinTones from 'pinyin-tone'
 
@@ -50,45 +51,77 @@ const Entry = () => {
       Speech.speak(entryInfo.simplified, {language:globals.voices[globals.currVoice], onDone:() => setSpeaking(false)})
     }
   }
+  
+  const copyToClipboard = async (txt) => {
+    await Clipboard.setStringAsync(txt)
+    let toast = Toast.show('Copied!', { hideOnPress: true, duration: 1200, position: Toast.positions.BOTTOM, backgroundColor: Colours[globals.theme]["opposite"] , shadowColor: Colours[globals.theme]["darkerGray"] })
+  }
 
   return (
     <RootSiblingParent>
       <SafeAreaView>
+        <FlatList
+          className="w-full h-full p-3 my-1"
+          scrollEnabled={true}
+          contentContainerStyle={{flexGrow: 1}}
+          ListHeaderComponent={<View style={{height: 8}} />}
+          ListFooterComponent={<View style={{height: 168}} />}
+          data={entryInfo}
+          keyExtractor={(item) => {item.item}}
+          renderItem={(entry) => (
+            <View className="flexGrow-1 mb-[20px]">
+              <View className="flex-row justify-center">
+              <Text selectable={true} className="font-bold text-3xl flex-1" style={{height: 43, color: Colours[globals.theme]["text"]}}>{entry.item.simplified}
+                <Text selectable={true} className="font-normal" style={{color: Colours[globals.theme]["lighterOpposite"]}}> {entry.item.simplified == entry.item.traditional ? "" : ('[' + entry.item.traditional + ']')}</Text>
+              </Text>
+              <TouchableOpacity
+                onPress={() => {copyToClipboard(entry.item.simplified + " [" + entry.item.traditional + "]")}}
+                className="pt-1"
+                style={{height: 32}}
+              >
+                <Image 
+                  source={Icons.copy}
+                  tintColor={Colours[globals.theme]["darkerGray"]}
+                  resizeMode='contain'
+                  className="max-h-[28px] max-w-[38px] mt-[2px]"
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {}}
+                className="pt-1"
+                style={{height: 32}}
+              >
+                <Image 
+                  source={Icons.plus}
+                  tintColor={Colours[globals.theme]["darkerGray"]}
+                  resizeMode='contain'
+                  className="max-h-[32px] max-w-[38px]"
+                />
+              </TouchableOpacity>
+            </View>
+            <View className="flex-row gap-[3px]" style={{height: 42}}>
+              <Text selectable={true} className="py-[2px] px-[1px] font-bold text-lg" style={{color: Colours[globals.theme]["text"], fontSize: 20}}>{PinyinTones(entry.item.pinyin.replace("[", "").replace("]", ""))}</Text>
+              <TouchableOpacity
+                onPress={() => {toggleSpeaking()}}
+                className="justify-center"
+              >
+                <Image 
+                  source={Icons.volume}
+                  tintColor={Colours[globals.theme]["darkerGray"]}
+                  resizeMode='contain'
+                  className="max-h-[20px] max-w-[38px]"
+                />
+              </TouchableOpacity>
+            </View>
+            <View className="w-full h-[2px] rounded-lg mb-2" style={{backgroundColor: Colours[globals.theme]["text"]}}></View>
+            <Text selectable={true} className="text-lg">
+              {entry.item.definitions.map((elem, ind) => String(ind+1) + "\t" + String(elem)).join("\n")}</Text>
+            </View>
+          )}
+
+        />
         <ScrollView className="w-full h-full p-3 my-1">
-          <View className="flex-row justify-center">
-            <Text selectable={true} className="font-bold text-3xl flex-1" style={{height: 43, color: Colours[globals.theme]["text"]}}>{entryInfo.simplified}
-              <Text selectable={true} className="font-normal" style={{color: Colours[globals.theme]["lighterOpposite"]}}> {entryInfo.simplified == entryInfo.traditional ? "" : ('[' + entryInfo.traditional + ']')}</Text>
-            </Text>
-            <TouchableOpacity
-              onPress={() => {}}
-              className="pt-1"
-              style={{height: 32}}
-            >
-              <Image 
-                source={Icons.plus}
-                tintColor={Colours[globals.theme]["darkerGray"]}
-                resizeMode='contain'
-                className="max-h-[32px] max-w-[38px]"
-              />
-            </TouchableOpacity>
-          </View>
-          <View className="flex-row gap-[3px]" style={{height: 42}}>
-            <Text selectable={true} className="py-[2px] px-[1px] font-bold text-lg" style={{color: Colours[globals.theme]["text"]}}>{PinyinTones(entryInfo.pinyin.replace("[", "").replace("]", ""))}</Text>
-            <TouchableOpacity
-              onPress={() => {toggleSpeaking()}}
-              className="justify-center"
-            >
-              <Image 
-                source={Icons.volume}
-                tintColor={Colours[globals.theme]["darkerGray"]}
-                resizeMode='contain'
-                className="max-h-[20px] max-w-[38px]"
-              />
-            </TouchableOpacity>
-          </View>
-          <View className="w-full h-[2px] rounded-lg mb-2" style={{backgroundColor: Colours[globals.theme]["text"]}}></View>
-          <Text selectable={true} className="text-lg">
-            {entryInfo.definitions.map((elem, ind) => String(ind+1) + "\t" + String(elem)).join("\n")}</Text>
+          
         </ScrollView>
       </SafeAreaView>
     </RootSiblingParent>

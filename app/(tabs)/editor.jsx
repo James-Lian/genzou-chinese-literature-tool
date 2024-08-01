@@ -288,19 +288,16 @@ const Editor = () => {
               <TouchableOpacity
                 onPress={() => {
                   if (
-                    globals.returnDictEntry(
-                      globals.currText.slice(textSelection.start, textSelection.end), 
-                      pinyin(globals.currText.split(" ").join("")).split(" ").slice(textSelection.start, textSelection.end)
-                    )
+                    globals.returnMatchingEntries(
+                      globals.currText.slice(textSelection.start, textSelection.end))
                   ) {
                     router.push(
                       '/entry?entryInfo=' + 
-                      JSON.stringify([
-                        globals.returnDictEntry(
+                      JSON.stringify(
+                        globals.returnMatchingEntries(
                           globals.currText.slice(textSelection.start, textSelection.end), 
-                          pinyin(globals.currText.split(" ").join("")).split(" ").slice(textSelection.start, textSelection.end)
                         )
-                      ])
+                      )
                     )
                   }
                 }}
