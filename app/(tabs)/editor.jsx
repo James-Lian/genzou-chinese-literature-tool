@@ -151,7 +151,7 @@ const Editor = () => {
           setResultTxts([text])
         }
         catch {
-          setResultTxts(["Error: TooManyRequests"])
+          setResultTxts(["Error: TooManyRequests (API error)"])
         }
       }
       else {
@@ -403,19 +403,27 @@ const Editor = () => {
             keyExtractor={(item) => {item}}
             renderItem={({item, index}) => (
               <View className='flexGrow-1'>
-                {item == "Translation will appear here... " || item == "Pinyin will appear here... " || item == "Error: TooManyRequests" ? (
+                {item == "Translation will appear here... " || item == "Pinyin will appear here... " || item == "Error: TooManyRequests (API error)" ? (
                   <Text className={'bg-transparent px-3 font-qbold'} style={{ fontSize: editorTextSize, color: "white" }} allowFontScaling={false}>{item}</Text>
                 ): (
-                  <View className='flex-row' style={{width: windowWidth, maxWidth: windowWidth}} key={index*8000}>
-                    {item.split(" ").map((input, subIndex) => (
-                      <View>
-                        {index % 2 == 0 ? (
-                          <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: editorTextSize, color: "white"}} className={'px-3 font-qbold text-center'} key={subIndex*1000000}>{input.trim()}</Text>
-                        ) : (
-                          <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: Math.floor(editorTextSize / 1.8), color: "white", fontFamily:"Arial", fontWeight:"bold"}} className='text-center' key={subIndex*3}>{input.trim()}</Text>
-                        )}
+                  <View className="flex-1">
+                    {globals.editorModes[globals.currEditorMode] == "Translation" ? (
+                      <View className="flex-1">
+                        <Text style={{fontSize: editorTextSize, color: "white"}} className={'px-3 font-qbold text-left'}>{item}</Text>
                       </View>
-                    ))}
+                    ) : (
+                      <View className='flex-row' style={{width: windowWidth, maxWidth: windowWidth}} key={index*8000}>
+                        {item.split(" ").map((input, subIndex) => (
+                          <View>
+                            {index % 2 == 0 ? (
+                              <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: editorTextSize, color: "white"}} className={'px-3 font-qbold text-center'} key={subIndex*91}>{input.trim()}</Text>
+                            ) : (
+                              <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: Math.floor(editorTextSize / 1.8), color: "white", fontFamily:"Arial", fontWeight:"bold"}} className='text-center' key={subIndex*3}>{input.trim()}</Text>
+                            )}
+                          </View>
+                        ))}
+                      </View>
+                    )}
                   </View>
                   )
                 }

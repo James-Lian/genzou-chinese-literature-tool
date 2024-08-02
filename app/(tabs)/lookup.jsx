@@ -210,7 +210,7 @@ const Lookup = () => {
           ListHeaderComponent={<View style={{height: 8}} />}
           ListFooterComponent={<View style={{height: 168}} />}
           data={searchResults}
-          keyExtractor={(item) => {item.item}}
+          keyExtractor={(item) => {searchResults.indexOf(item)}}
           renderItem={(entry) => (
             <View className="flexGrow-1">
               {entry.item == "You're on the English mode right now; try searching for English words." || entry.item == "No results found." ? (

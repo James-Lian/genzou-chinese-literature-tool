@@ -15,8 +15,6 @@ const BookmarkEntry = () => {
   entryList = JSON.parse(decodeURIComponent(entryList))
   title = JSON.parse(decodeURIComponent(title))
 
-  console.log(entryList)
-
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -37,6 +35,32 @@ const BookmarkEntry = () => {
     });
   }, [navigation])
 
+  const returnAllPinyin = (term) => {
+    const matchingEntries = globals.returnMatchingEntries(term);
+
+    let possiblePY = []
+    for (let entry of matchingEntries) {
+      if (entry.simplified == term || entry.traditional == term) {
+        possiblePY.push(entry.pinyin.replace("[", "").replace("]", ""))
+      }
+    }
+
+    return possiblePY;
+  }
+
+  const returnAllDefs = (term) => {
+    const matchingEntries = globals.returnMatchingEntries(term);
+
+    let possibleDefs = []
+    for (let entry of matchingEntries) {
+      if (entry.simplified == term || entry.traditional == term) {
+        possibleDefs.push(entry.definitions.join(" ; "))
+      }
+    }
+
+    return possibleDefs;
+  }
+
   return (
     <SafeAreaView className="min-w-full min-h-full">
       <View className="flex-1" style={{backgroundColor: Colours[globals.theme]["darker"]}}>
@@ -45,20 +69,21 @@ const BookmarkEntry = () => {
           contentContainerStyle={{flexGrow: 1}}
           ListHeaderComponent={<View style={{height: 8}} />}
           ListFooterComponent={<View style={{height: 168}} />}
-          data={entryList}
-          keyExtractor={(item) => {item.item}}
+          data={entryList.reverse()}
+          keyExtractor={(item) => {entryList.indexOf(item)}}
           renderItem={(entry) => (
             <View className="flexGrow-1">
               <TouchableOpacity 
                 className="flexGrow-1 my-[2px]"
                 onPress={() => {router.push('/entry?entryInfo=' + encodeURIComponent(JSON.stringify(globals.returnMatchingEntries(entry.item))))}}
               >
-                <View className="flexGrow-1 py-[3px]" style={{borderBottomWidth: 1, borderColor: Colours[globals.theme]["text"]}}>
+                <View className="flexGrow-1 py-[6px]" style={{borderBottomWidth: 1, borderColor: Colours[globals.theme]["text"]}}>
                   <Text numberOfLines={1} className={'bg-transparent px-3 font-bold'} style={{ fontSize: 23, color: Colours[globals.theme]["text"] }} allowFontScaling={false}>
-                    {/* {entry.item.simplified}<Text className="font-normal">{(entry.item.simplified == entry.item.traditional ? "" : " [" + entry.item.traditional + "]")} {PinyinTones(entry.item.pinyin.replace("[", "").replace("]", ""))}</Text> */}
                     {entry.item}
+                    <Text className="font-normal"> {PinyinTones(returnAllPinyin(entry.item).join(" / "))}</Text>
+                    {/* {entry.item.simplified}<Text className="font-normal">{(entry.item.simplified == entry.item.traditional ? "" : " [" + entry.item.traditional + "]")} {PinyinTones(entry.item.pinyin.replace("[", "").replace("]", ""))}</Text> */}
                   </Text>
-                  {/* <Text numberOfLines={1} className={'bg-transparent px-3 font-normal mt-[1px] mb-[3px]'}>{entry.item.definitions.join(" / ")}</Text> */}
+                  <Text numberOfLines={1} className={'bg-transparent px-3 font-normal mt-[2px] mb-[3px]'}>{returnAllDefs(entry.item).join(" / ")}</Text>
                 </View>
               </TouchableOpacity>
             </View>

@@ -78,7 +78,7 @@ const Entry = () => {
           ListHeaderComponent={<View style={{height: 8}} />}
           ListFooterComponent={<View style={{height: 168}} />}
           data={entryInfo}
-          keyExtractor={(item) => {item.item}}
+          keyExtractor={(item) => {entryInfo.indexOf(item)}}
           renderItem={(entry) => (
             <View className="flexGrow-1 mb-[20px]">
               <View className="flex-row justify-center">

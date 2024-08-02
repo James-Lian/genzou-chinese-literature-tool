@@ -55,6 +55,37 @@ export const bookmarkExists = async (value, folder) => {
     return false;
 }
 
+// true for success, false for failure
+export const createBookmarkFolder = async (folder) => {
+    let bookmarkData = await getData("bookmarks")
+    if (bookmarkData) {
+        if (bookmarkData.hasOwnProperty(folder)) {
+            return false;
+        }
+        else {
+            bookmarkData[folder] = []
+        }
+    }
+    else {
+        bookmarkData = {[folder]: []}
+    }
+    await storeData(bookmarkData, "bookmarks")
+    return true;
+}
+
+export const deleteBookmarkFolders = async (folders) => {
+    let bookmarkData = await getData("bookmarks")
+    if (bookmarkData) {
+        for (let folder of folders) {
+            if (bookmarkData.hasOwnProperty(folder)) {
+                delete bookmarkData.folder
+            }
+        }
+    }
+
+    await storeData(bookmarkData, "bookmarks")
+}
+
 export const setBookmark = async (value, folder) => {
     let bookmarkData = await getData("bookmarks")
     if (bookmarkData) {
@@ -145,17 +176,6 @@ export const dictEntryExists = (value) => {
     }
     return false;
 }
-
-// export const returnDictEntry = (simpTrad, py) => {
-//     for (let entry of dictionary) {
-//         if (entry.simplified == simpTrad || entry.traditional == simpTrad) {
-//             if (entry.pinyin == py) {
-//                 return entry;
-//             }
-//         }
-//     }
-//     return null;
-// }
 
 export const returnMatchingEntries = (simpTrad) => {
     const matchingEntries = dictionary.filter(entry => 
