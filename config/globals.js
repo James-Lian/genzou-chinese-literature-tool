@@ -78,7 +78,7 @@ export const deleteBookmarkFolders = async (folders) => {
     if (bookmarkData) {
         for (let folder of folders) {
             if (bookmarkData.hasOwnProperty(folder)) {
-                delete bookmarkData.folder
+                delete bookmarkData[folder];
             }
         }
     }

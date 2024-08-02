@@ -15,6 +15,8 @@ import PinyinTones from 'pinyin-tone'
 import { exists, use } from 'i18next';
 import { copy } from 'superagent';
 
+import emitter from '../components/EventEmitter.js';
+
 const Entry = () => {
   
   let { entryInfo } = useLocalSearchParams() // Change to array-compatible
@@ -101,7 +103,8 @@ const Entry = () => {
                 onPress={async () => {
                   const bmExists = await globals.bookmarkExists(entry.item.simplified, "Uncategorized")
                   if (globals.dictEntryExists(entry.item.simplified) && !bmExists) {
-                    globals.setBookmark(entry.item.simplified, "Uncategorized")
+                    await globals.setBookmark(entry.item.simplified, "Uncategorized")
+                    emitter.emit('bookmarksChanged')
                     setExistsInStorage(true)
                   }
                 }}

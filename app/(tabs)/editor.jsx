@@ -18,6 +18,8 @@ import { SideMenu } from '../../components'
 import { Icons } from '../../constants/index.js'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import emitter from '../../components/EventEmitter.js'
+
 const Editor = () => {
   const [existsInStorage, setExistsInStorage] = useState(false);
   const [existsInDictionary, setExistsInDictionary] = useState(false);
@@ -323,9 +325,10 @@ const Editor = () => {
                 />
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => {
+                onPress={async () => {
                   if (existsInDictionary && !existsInStorage) {
-                    globals.setBookmark(globals.currText.slice(textSelection.start, textSelection.end), "Uncategorized")
+                    await globals.setBookmark(globals.currText.slice(textSelection.start, textSelection.end), "Uncategorized")
+                    emitter.emit('bookmarksChanged')
                   }
                   setExistsInStorage(true)
                 }}

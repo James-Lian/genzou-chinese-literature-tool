@@ -6,12 +6,26 @@ import { Colours } from '../../constants'
 import { Icons } from '../../constants/index.js'
 
 import { router, useLocalSearchParams } from 'expo-router';
+import emitter from '../../components/EventEmitter.js'
 
 const SavedTerms = () => {
   const [folders, setFolders] = useState([])
 
   const [editing, setEditing] = useState(false)
   const [selectedFolders, setSelectedFolders] = useState([])
+
+  const folderSelected = (folder) => {
+    if (selectedFolders.includes(folder)) {
+      const index = selectedFolders.indexOf(folder);
+      let copyOfSelected = [...selectedFolders];
+      copyOfSelected.splice(index, 1);
+      setSelectedFolders(copyOfSelected);
+    } else {
+      let copyOfSelected = [...selectedFolders];
+      copyOfSelected.push(folder);
+      setSelectedFolders(copyOfSelected);
+    }
+  }
 
   const retrieveFolders = async () => {
     const bookmarkFolders = await globals.getData("bookmarks")
@@ -24,7 +38,15 @@ const SavedTerms = () => {
     }
   }
 
-  retrieveFolders()
+  useEffect(() => {
+    retrieveFolders()
+
+    emitter.on('bookmarksChanged', retrieveFolders);
+
+    return () => {
+      emitter.off('bookmarksChanged', retrieveFolders)
+    }
+  }, [])
 
   const createNewFolder = () => {
     Alert.prompt(
@@ -39,6 +61,8 @@ const SavedTerms = () => {
           onPress: async (folderName) => {
             if (await globals.createBookmarkFolder(folderName) === false) {
               Alert.alert("Error", "That folder name already exists")
+            } else {
+              emitter.emit('bookmarksChanged')
             }
           }
         }
@@ -79,7 +103,14 @@ const SavedTerms = () => {
         </View>
       ) : (
         <View className="w-full justify-center items-center flex-row h-[58px] py-3 pl-[20px] pr-[16px]" style={{backgroundColor: Colours[globals.theme]["background"]}}>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={async () => {
+              await globals.deleteBookmarkFolders(selectedFolders)
+              setEditing(false);
+              setSelectedFolders([])
+              emitter.emit('bookmarksChanged')
+            }}
+          >
             <Text className="text-lg font-qbold" style={{color: Colours[globals.theme]["darkGray"]}}>Delete</Text>
           </TouchableOpacity>
           <TouchableOpacity className="items-center flex-1">
@@ -99,7 +130,7 @@ const SavedTerms = () => {
           ListHeaderComponent={<View style={{height: 8}} />}
           ListFooterComponent={<View style={{height: 168}} />}
           data={folders}
-          keyExtractor = {(item) => {folders.indexOf(item)}}
+          keyExtractor = {(item) => {item.item}}
           renderItem={(item) => (
             <View className="flexGrow-1">
               {item.item == null ? (
@@ -121,9 +152,12 @@ const SavedTerms = () => {
                 >
                   <View className="flex-row py-[12px] px-[20px]" style={{borderBottomWidth: 1, borderColor: Colours[globals.theme]["text"]}}>
                     {editing &&
-                      <TouchableOpacity className="min-h-[28px] max-h-[28px] min-w-[48px] max-w-[48px] mr-3">
+                      <TouchableOpacity 
+                        className="min-h-[28px] max-h-[28px] min-w-[48px] max-w-[48px] mr-3"
+                        onPress={() => {folderSelected(Object.keys(item.item)[0])} }
+                      >
                         <Image
-                          source={Icons.circle}
+                          source={(selectedFolders.includes(Object.keys(item.item)[0])) ? Icons.checkCircle : Icons.circle}
                           tintColor={Colours[globals.theme]["darkerGray"]}
                           resizeMode='contain'
                           className="max-h-[28px] max-w-[28px]"
