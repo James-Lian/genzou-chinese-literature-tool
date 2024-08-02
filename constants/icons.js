@@ -31,7 +31,7 @@ import folderNew from '../assets/icons/folder-plus.png'
 import folder from '../assets/icons/folder.png'
 import rightChevron from '../assets/icons/chevron-right.png'
 import leftChevron from '../assets/icons/chevron-left.png'
-
+import save from '../assets/icons/save.png'
 
 export default { 
     edit, 
@@ -67,4 +67,5 @@ export default {
     folder,
     rightChevron,
     leftChevron,
+    save,
 };

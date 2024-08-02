@@ -40,7 +40,13 @@ const SavedTerms = () => {
           />
         </TouchableOpacity>
         <Text className="text-lg text-center font-qbold flex-1">Bookmarks</Text>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            if (folders[0] != null) {
+
+            }
+          }}
+        >
           <Image 
             source={Icons.edit}
             tintColor={Colours[globals.theme]["darkerGray"]}
@@ -66,7 +72,14 @@ const SavedTerms = () => {
               ) : (
                 <TouchableOpacity 
                   className="flexGrow-1 my-[2px]"
-                  onPress={() => {router.push("/bookmark-entries?entryList=" + JSON.stringify(folders[item]))}}
+                  onPress={() => {
+                    router.push(
+                      "/bookmark-entries?entryList=" + 
+                      encodeURIComponent(JSON.stringify(folders[item.index][Object.keys(item.item)[0]])) + 
+                      "&title=" + 
+                      encodeURIComponent(JSON.stringify(Object.keys(item.item)[0]))
+                    )
+                  }}
                 >
                   <View className="flex-row py-[12px] px-[20px]" style={{borderBottomWidth: 1, borderColor: Colours[globals.theme]["text"]}}>
                     {}

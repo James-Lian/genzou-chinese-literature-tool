@@ -254,7 +254,7 @@ const Editor = () => {
                     onPress={() => {}}
                   >
                     <Image 
-                      source={Icons.download}
+                      source={Icons.save}
                       tintColor={Colours[globals.theme]["darkerGray"]}
                       resizeMode='contain'
                       className="max-h-[28px] max-w-[38px]"

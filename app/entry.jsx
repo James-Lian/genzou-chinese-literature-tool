@@ -20,15 +20,11 @@ const Entry = () => {
   let { entryInfo } = useLocalSearchParams() // Change to array-compatible
   entryInfo = JSON.parse(decodeURIComponent(entryInfo))
   
-  const [existsInStorage, setExistsInStorage] = useState(Array.apply(false, Array(entryInfo.length)).map(function() {return false}))
+  const [existsInStorage, setExistsInStorage] = useState(false)
   
   useEffect(() => {
     const retrieveStorageStates = async () => {
-      let copyOfExistsInStorage = [...existsInStorage]
-      for (let i = 0; i< entryInfo.length; i++) {
-        copyOfExistsInStorage[i] = await globals.bookmarkExists(entryInfo[i].simplified, "Uncategorized")
-      }
-      setExistsInStorage(copyOfExistsInStorage)
+      setExistsInStorage(await globals.bookmarkExists(entryInfo[0].simplified, "Uncategorized"))
     }
     retrieveStorageStates()
   }, [])
@@ -106,18 +102,16 @@ const Entry = () => {
                   const bmExists = await globals.bookmarkExists(entry.item.simplified, "Uncategorized")
                   if (globals.dictEntryExists(entry.item.simplified) && !bmExists) {
                     globals.setBookmark(entry.item.simplified, "Uncategorized")
-                    let copyOf = [...existsInStorage]
-                    copyOf[entry.index] = true;
-                    setExistsInStorage(copyOf)
+                    setExistsInStorage(true)
                   }
                 }}
-                disabled={existsInStorage[entry.index]}
+                disabled={existsInStorage}
                 className="pt-1"
                 style={{height: 32}}
               >
                 <Image 
                   source={Icons.plus}
-                  tintColor={existsInStorage[entry.index] ? Colours[globals.theme]["lighterGray"] : Colours[globals.theme]["darkerGray"]}
+                  tintColor={existsInStorage ? Colours[globals.theme]["lighterGray"] : Colours[globals.theme]["darkerGray"]}
                   resizeMode='contain'
                   className="max-h-[32px] max-w-[38px]"
                 />

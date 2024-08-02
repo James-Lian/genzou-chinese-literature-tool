@@ -1,9 +1,9 @@
 // AsyncStorage for storing information...
 /*
 @bookmarks: for saving phrases and terms (object: {uncategorized: []})
-@files: for saving editor text (object)
-@history: for saving search history (object: {dict (list), search (list)})
-@system-info: for saving system info like themes and stuff (object: {welcomed, theme, prevText, currVoice})
+@files: for saving editor text (array)
+@history: for saving search history (object: {dict (array), search (array)})
+@system-info: for saving system info like themes and stuff (object: {welcomed, ?theme, ?prevText (array), ?currVoice})
 */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';

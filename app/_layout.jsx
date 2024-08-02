@@ -2,6 +2,10 @@ import { useEffect } from "react";
 import { SplashScreen, Stack } from 'expo-router';
 import { useFonts } from "expo-font";
 
+import * as globals from '../config/globals.js'
+import { Colours } from '../constants'
+import { Icons } from '../constants/index.js'
+
 SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
