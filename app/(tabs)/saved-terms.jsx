@@ -22,9 +22,7 @@ const SavedTerms = () => {
     }
   }
 
-  useEffect(() => {
-    retrieveFolders()
-  }, [])
+  retrieveFolders()
 
   const storeFolders = async () => {
     globals.storeData(folders, "bookmarks")
@@ -70,7 +68,7 @@ const SavedTerms = () => {
                   className="flexGrow-1 my-[2px]"
                   onPress={() => {router.push("/bookmark-entries?entryList=" + JSON.stringify(folders[item]))}}
                 >
-                  <View className="flex-row py-[10px] px-[20px]" style={{borderBottomWidth: 1, borderColor: Colours[globals.theme]["text"]}}>
+                  <View className="flex-row py-[12px] px-[20px]" style={{borderBottomWidth: 1, borderColor: Colours[globals.theme]["text"]}}>
                     {}
                     <Image
                       source={Icons.folder}
@@ -78,9 +76,17 @@ const SavedTerms = () => {
                       resizeMode='contain'
                       className="max-h-[28px] max-w-[28px]"
                     />
-                    <Text numberOfLines={1} className={'bg-transparent px-3 font-qnormal'} style={{ fontSize: 20, color: Colours[globals.theme]["text"] }} allowFontScaling={false}>
+                    <Text numberOfLines={1} className={'bg-transparent px-3 font-qnormal flex-1'} style={{ fontSize: 20, color: Colours[globals.theme]["text"] }} allowFontScaling={false}>
                       {Object.keys(item.item)[0]}
                     </Text>
+                    <Text numberOfLines={1} allowFontScaling={false} className={'bg-transparent px-3 font-qnormal'} style={{ fontSize: 20, color: Colours[globals.theme]["text"] }}>{Object.values(item.item)[0].length}</Text>
+                    
+                    <Image
+                      source={Icons.rightChevron}
+                      tintColor={Colours[globals.theme]["darkerGray"]}
+                      resizeMode='contain'
+                      className="max-h-[28px] max-w-[28px]"
+                    />
                   </View>
                 </TouchableOpacity>
               )}

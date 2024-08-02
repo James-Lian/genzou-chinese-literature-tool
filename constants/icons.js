@@ -29,6 +29,9 @@ import circle from '../assets/icons/circle.png'
 import checkCircle from '../assets/icons/check-circle.png'
 import folderNew from '../assets/icons/folder-plus.png'
 import folder from '../assets/icons/folder.png'
+import rightChevron from '../assets/icons/chevron-right.png'
+import leftChevron from '../assets/icons/chevron-left.png'
+
 
 export default { 
     edit, 
@@ -61,5 +64,7 @@ export default {
     circle,
     checkCircle,
     folderNew,
-    folder
+    folder,
+    rightChevron,
+    leftChevron,
 };

@@ -12,11 +12,26 @@ import Toast from 'react-native-root-toast';
 import * as Clipboard from 'expo-clipboard';
 
 import PinyinTones from 'pinyin-tone'
+import { exists, use } from 'i18next';
+import { copy } from 'superagent';
 
 const Entry = () => {
+  
   let { entryInfo } = useLocalSearchParams() // Change to array-compatible
-
-  entryInfo = JSON.parse(entryInfo)
+  entryInfo = JSON.parse(decodeURIComponent(entryInfo))
+  
+  const [existsInStorage, setExistsInStorage] = useState(Array.apply(false, Array(entryInfo.length)).map(function() {return false}))
+  
+  useEffect(() => {
+    const retrieveStorageStates = async () => {
+      let copyOfExistsInStorage = [...existsInStorage]
+      for (let i = 0; i< entryInfo.length; i++) {
+        copyOfExistsInStorage[i] = await globals.bookmarkExists(entryInfo[i].simplified, "Uncategorized")
+      }
+      setExistsInStorage(copyOfExistsInStorage)
+    }
+    retrieveStorageStates()
+  }, [])
 
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
@@ -87,13 +102,22 @@ const Entry = () => {
                 />
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => {}}
+                onPress={async () => {
+                  const bmExists = await globals.bookmarkExists(entry.item.simplified, "Uncategorized")
+                  if (globals.dictEntryExists(entry.item.simplified) && !bmExists) {
+                    globals.setBookmark(entry.item.simplified, "Uncategorized")
+                    let copyOf = [...existsInStorage]
+                    copyOf[entry.index] = true;
+                    setExistsInStorage(copyOf)
+                  }
+                }}
+                disabled={existsInStorage[entry.index]}
                 className="pt-1"
                 style={{height: 32}}
               >
                 <Image 
                   source={Icons.plus}
-                  tintColor={Colours[globals.theme]["darkerGray"]}
+                  tintColor={existsInStorage[entry.index] ? Colours[globals.theme]["lighterGray"] : Colours[globals.theme]["darkerGray"]}
                   resizeMode='contain'
                   className="max-h-[32px] max-w-[38px]"
                 />

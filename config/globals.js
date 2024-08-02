@@ -146,16 +146,16 @@ export const dictEntryExists = (value) => {
     return false;
 }
 
-export const returnDictEntry = (simpTrad, py) => {
-    for (let entry of dictionary) {
-        if (entry.simplified == simpTrad || entry.traditional == simpTrad) {
-            if (entry.pinyin == py) {
-                return entry;
-            }
-        }
-    }
-    return null;
-}
+// export const returnDictEntry = (simpTrad, py) => {
+//     for (let entry of dictionary) {
+//         if (entry.simplified == simpTrad || entry.traditional == simpTrad) {
+//             if (entry.pinyin == py) {
+//                 return entry;
+//             }
+//         }
+//     }
+//     return null;
+// }
 
 export const returnMatchingEntries = (simpTrad) => {
     const matchingEntries = dictionary.filter(entry => 

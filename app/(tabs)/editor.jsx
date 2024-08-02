@@ -293,9 +293,11 @@ const Editor = () => {
                   ) {
                     router.push(
                       '/entry?entryInfo=' + 
-                      JSON.stringify(
-                        globals.returnMatchingEntries(
-                          globals.currText.slice(textSelection.start, textSelection.end), 
+                      encodeURIComponent( // the string must be encoded because if there is a ? in the information, like in the definitions for 为什么, then it'll think the string has ended
+                        JSON.stringify(
+                          globals.returnMatchingEntries(
+                            globals.currText.slice(textSelection.start, textSelection.end)
+                          )
                         )
                       )
                     )
@@ -305,7 +307,7 @@ const Editor = () => {
               >
                 <Image 
                   source={Icons.cornerUpRight}
-                  tintColor={Colours[globals.theme]["darkerGray"]}
+                  tintColor={(existsInDictionary) ? Colours[globals.theme]["darkerGray"] : Colours[globals.theme]["lighterGray"]}
                   resizeMode='contain'
                   className="max-h-[28px] max-w-[38px]"
                 />
@@ -328,7 +330,6 @@ const Editor = () => {
                   setExistsInStorage(true)
                 }}
                 disabled={!existsInDictionary || existsInStorage}
-                key={existsInStorage}
               >
                 <Image 
                   source={Icons.plus}

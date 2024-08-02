@@ -1,6 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
+import * as globals from '../config/globals.js'
+import { Colours } from '../constants'
+import { Icons } from '../constants/index.js'
+
+import { router, useLocalSearchParams } from 'expo-router';
+
 const BookmarkEntry = () => {
   return (
     <View>
