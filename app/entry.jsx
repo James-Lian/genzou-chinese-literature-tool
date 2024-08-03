@@ -103,7 +103,7 @@ const Entry = () => {
                 onPress={async () => {
                   const bmExists = await globals.bookmarkExists(entry.item.simplified, "Uncategorized")
                   if (globals.dictEntryExists(entry.item.simplified) && !bmExists) {
-                    await globals.setBookmark(entry.item.simplified, "Uncategorized")
+                    await globals.setBookmark([entry.item.simplified], "Uncategorized")
                     emitter.emit('bookmarksChanged')
                     setExistsInStorage(true)
                   }
@@ -121,7 +121,7 @@ const Entry = () => {
               </TouchableOpacity>
             </View>
             <View className="flex-row gap-[3px]" style={{height: 42}}>
-              <Text selectable={true} className="py-[2px] px-[1px] font-bold text-lg" style={{color: Colours[globals.theme]["text"], fontSize: 20}}>{PinyinTones(entry.item.pinyin.replace("[", "").replace("]", ""))}</Text>
+              <Text selectable={true} className="py-[2px] px-[1px] font-bold text-lg" style={{color: Colours[globals.theme]["text"], fontSize: 20}}>{PinyinTones(entry.item.pinyin.toLowerCase().replace("[", "").replace("]", ""))}</Text>
               <TouchableOpacity
                 onPress={() => {toggleSpeaking()}}
                 className="justify-center"

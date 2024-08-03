@@ -86,18 +86,30 @@ export const deleteBookmarkFolders = async (folders) => {
     await storeData(bookmarkData, "bookmarks")
 }
 
-export const setBookmark = async (value, folder) => {
+export const getBookmarkFolderContents = async (folder) => {
     let bookmarkData = await getData("bookmarks")
     if (bookmarkData) {
         if (bookmarkData.hasOwnProperty(folder)) {
-            bookmarkData[folder].push(value)
+            return bookmarkData[folder]
+        }
+    }
+    return null
+}
+
+export const setBookmark = async (values, folder) => {
+    let bookmarkData = await getData("bookmarks")
+    if (bookmarkData) {
+        if (bookmarkData.hasOwnProperty(folder)) {
+            for (let value of values) {
+                bookmarkData[folder].push(value)
+            }
         }
         else {
-            bookmarkData[folder] = [value]
+            bookmarkData[folder] = [values]
         }
     }
     else {
-        bookmarkData = {[folder]: [value]}
+        bookmarkData = {[folder]: [values]}
     }
     storeData(bookmarkData, "bookmarks")
 }
@@ -109,6 +121,10 @@ export const delBookmark = async (values, folder) => {
         bookmarkData[folder].splice(index, 1)
     }
     storeData(bookmarkData, "bookmarks")
+}
+
+export const moveBookmark = async (values, oldFolder, newFolder) => {
+
 }
 
 // config and ux variables

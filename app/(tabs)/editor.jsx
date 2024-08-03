@@ -327,7 +327,7 @@ const Editor = () => {
               <TouchableOpacity
                 onPress={async () => {
                   if (existsInDictionary && !existsInStorage) {
-                    await globals.setBookmark(globals.currText.slice(textSelection.start, textSelection.end), "Uncategorized")
+                    await globals.setBookmark([globals.currText.slice(textSelection.start, textSelection.end)], "Uncategorized")
                     emitter.emit('bookmarksChanged')
                   }
                   setExistsInStorage(true)
