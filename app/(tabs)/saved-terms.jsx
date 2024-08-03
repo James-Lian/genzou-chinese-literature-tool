@@ -142,10 +142,8 @@ const SavedTerms = () => {
                   className="flexGrow-1 my-[2px]"
                   onPress={() => {
                     router.push(
-                      "/bookmark-entries?entryList=" + 
-                      encodeURIComponent(JSON.stringify(folders[item.index][Object.keys(item.item)[0]])) + 
-                      "&title=" + 
-                      encodeURIComponent(JSON.stringify(Object.keys(item.item)[0]))
+                      "/bookmark-entries?title=" + 
+                      encodeURIComponent(Object.keys(item.item)[0])
                     )
                   }}
                   disabled={editing}

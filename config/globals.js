@@ -102,10 +102,12 @@ export const setBookmark = async (value, folder) => {
     storeData(bookmarkData, "bookmarks")
 }
 
-export const delBookmark = async (value, folder) => {
+export const delBookmark = async (values, folder) => {
     let bookmarkData = await getData("bookmarks")
-    const index = bookmarkData[folder].indexOf(value)
-    bookmarkData[folder].splice(index, 1)
+    for (let value of values) {
+        const index = bookmarkData[folder].indexOf(value)
+        bookmarkData[folder].splice(index, 1)
+    }
     storeData(bookmarkData, "bookmarks")
 }
 
