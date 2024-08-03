@@ -105,11 +105,11 @@ export const setBookmark = async (values, folder) => {
             }
         }
         else {
-            bookmarkData[folder] = [values]
+            bookmarkData[folder] = [...values]
         }
     }
     else {
-        bookmarkData = {[folder]: [values]}
+        bookmarkData = {[folder]: [...values]}
     }
     storeData(bookmarkData, "bookmarks")
 }
@@ -124,7 +124,26 @@ export const delBookmark = async (values, folder) => {
 }
 
 export const moveBookmark = async (values, oldFolder, newFolder) => {
+    for (let value of values) {
+        await delBookmark([value], oldFolder)
+        await setBookmark([value], newFolder)
+    }
+    let bookmarkData = await getData("bookmarks")
+    console.log(bookmarkData)
+}
 
+export const combineBookmarkFolders = async (folders, newFolder) => {
+    let bookmarkData = await getData("bookmarks")
+
+    let values = []
+
+    for (let folder of folders) {
+        values = values.concat(bookmarkData[folder])
+        console.log(bookmarkData[folder], values, newFolder)
+        await deleteBookmarkFolders([folder])
+    }
+
+    await setBookmark(values, newFolder)
 }
 
 // config and ux variables

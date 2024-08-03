@@ -73,6 +73,29 @@ const SavedTerms = () => {
 
   useEffect(() => {}, [])
 
+  const combineFolders = async () => {
+    Alert.prompt(
+      "Create a new folder", 
+      "Give your folder a unique name", 
+      [
+        {
+          text: "Cancel",
+        },
+        {
+          text: "OK",
+          onPress: async (folderName) => {
+            if (await globals.createBookmarkFolder(folderName) === false) {
+              Alert.alert("Error", "That folder name already exists")
+            } else {
+              emitter.emit('bookmarksChanged')
+            }
+          }
+        }
+      ],
+      "plain-text"
+    )
+  }
+
   return (
     <SafeAreaView className="min-h-full min-w-full">
       {!editing ? (
@@ -113,7 +136,30 @@ const SavedTerms = () => {
           >
             <Text className="text-lg font-qbold" style={{color: Colours[globals.theme]["darkGray"]}}>Delete</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="items-center flex-1">
+          <TouchableOpacity 
+            className="items-center flex-1"
+            onPress={() => {
+              Alert.prompt(
+                "Create a new folder", 
+                "Give your folder a unique name", 
+                [
+                  {
+                    text: "Cancel",
+                  },
+                  {
+                    text: "OK",
+                    onPress: async (folderName) => {
+                      await globals.combineBookmarkFolders(selectedFolders, folderName)
+                      setEditing(false);
+                      setSelectedFolders([])        
+                      emitter.emit('bookmarksChanged')
+                    }
+                  }
+                ],
+                "plain-text"
+              )
+            }}
+          >
             <Text className="text-lg font-qbold" style={{color: Colours[globals.theme]["darkGray"]}}>Combine</Text>
           </TouchableOpacity>
           <TouchableOpacity

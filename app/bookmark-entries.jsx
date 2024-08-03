@@ -50,8 +50,10 @@ const BookmarkEntry = () => {
     }
   }
 
-  const [folderNames, setFolderNames] = useState([]) // this list excludes the current folder
-  const [folderToMoveTo, setfolderToMoveTo] = useState(0)
+  const [folderNames, setFolderNames] = useState([]); // this list excludes the current folder
+  const [folderToMoveTo, setfolderToMoveTo] = useState(0);
+  let [newFolderName, setNewFolderName] = useState("folder");
+  let folderNameIndex = 1;
 
   const retrieveFolderNames = async () => {
     const bookmarkData = await globals.getData('bookmarks')
@@ -61,6 +63,16 @@ const BookmarkEntry = () => {
         folderNamesWithoutCurrent.splice(folderNamesWithoutCurrent.indexOf(title), 1)
       }
       setFolderNames(folderNamesWithoutCurrent)
+
+      let foundFolderName = false
+      while (!foundFolderName) {
+        if (folderNamesWithoutCurrent.includes("folder" + folderNameIndex.toString()) || "folder" == title) {
+          folderNameIndex++;
+        } else {
+          setNewFolderName("folder" + folderNameIndex.toString())
+          foundFolderName = true
+        }
+      }
     } else {
       setFolderNames([])
     }
@@ -227,17 +239,44 @@ const BookmarkEntry = () => {
                 {folderNames.length == 0 ? (
                   <View className="w-full h-full items-center">
                     <Text className="font-qbold text-lg text-center mb-[20px]" style={{color: Colours[globals.theme]["text"]}}>You have no other folders. Create a new destination folder.</Text>
-                    <TextInput />
+                    <View
+                      className="my-[6px] rounded-lg mr-2 justify-center w-full mb-8"
+                      style={{flex:1, backgroundColor:Colours[globals.theme]["darker"], minHeight: 53, maxHeight: 53}}
+                    >
+                      <TextInput
+                        className="px-[10px] rounded-lg font-qnormal"
+                        defaultValue={newFolderName}
+                        style={{flex: 1, fontSize: 20, color: Colours[globals.theme]["text"]}}
+                        allowFontScaling={false}
+                        onChangeText={(txt) => {setNewFolderName(txt);}}
+                        clearButtonMode='always'
+                      />
+                    </View>
+                    <WelcomeButton
+                      title="Confirm"
+                      containerStyles="my-[3px]"
+                      textStyles="text-xl text-center"
+                      handlePress={async () => {
+                        if (!folderNames.includes(newFolderName) && newFolderName != title && newFolderName != "") {
+                          await globals.createBookmarkFolder(newFolderName);
+                          await globals.moveBookmark(selected, title, newFolderName)
+                          setConfirmMoveOpen(false)
+                          setEditing(false);
+                          setSelected([]);
+                          emitter.emit("bookmarksChanged");
+                        }
+                      }}
+                    />
                   </View>
                 ) : (
-                  <View className="w-full h-full justify-end items-center">
+                  <View className="w-full h-full justify-center items-center">
                       <Text className="font-qbold text-lg text-center mb-[20px]" style={{color: Colours[globals.theme]["text"]}}>Choose a folder...</Text>
                       <View className="items-center mb-3">
                         <SelectDropdown
                           data={folderNames}
                           defaultValueByIndex={folderToMoveTo}
                           onSelect={(selectedItem, index) => {
-                            setfolderToMoveTo(index); // and prompting rerender
+                            setfolderToMoveTo(selectedItem); // and prompting rerender
                           }}
                           renderButton={(selectedItem, isOpened) => {
                             return (
@@ -272,7 +311,13 @@ const BookmarkEntry = () => {
                         title="Confirm"
                         containerStyles="my-[3px]"
                         textStyles="text-xl text-center"
-                        handlePress={() => {toggleConfirmDialog(); globals.currText = scannedText; router.replace('/editor')}}
+                        handlePress={async () => {
+                          await globals.moveBookmark(selected, title, folderToMoveTo);
+                          setEditing(false);
+                          setSelected([]);
+                          setConfirmMoveOpen(false)
+                          emitter.emit("bookmarksChanged");
+                        }}
                       />
                   </View>
                 )}
