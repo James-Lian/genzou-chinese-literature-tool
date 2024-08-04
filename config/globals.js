@@ -3,7 +3,7 @@
 @bookmarks: for saving phrases and terms (object: {uncategorized: []})
 @files: for saving editor text (array)
 @history: for saving search history (object: {dict (array), search (array)})
-@system-info: for saving system info like themes and stuff (object: {welcomed, ?theme, ?prevText (array), ?currVoice})
+@system-info: for saving system info like themes and stuff (object: {welcomed, ?theme, restoreHistory, prevText (array), ?currVoice})
 */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -157,8 +157,66 @@ export const combineBookmarkFolders = async (folders, newFolder) => {
     await setBookmark(values, newFolder)
 }
 
+export const getWelcomed = async () => {
+    let systemData = await getData("system-info");
+
+    if (systemData) {
+        return systemData["welcomed"]
+    } else {
+        return false;
+    }
+}
+
+export const setWelcomed = async (state) => {
+    let systemData = await getData("system-info");
+
+    if (systemData) {
+        systemData["welcomed"] = state;
+    } else {
+        systemData = {"welcomed": state};
+    }
+
+    storeData(systemData, "system-info")
+}
+
+export const setPrevText = async (txt) => {
+
+}
+
+export const getTheme = async () => {
+    let systemData = await getData("system-info");
+
+    if (systemData) {
+        if (systemData.hasOwnProperty("theme")) {
+            return systemData["theme"]
+        } else {
+            systemData={"theme" : "light"};
+            storeData(systemData, "system-info")
+            return "light"
+        }
+    } else {
+        systemData = {"theme": "light"};
+        storeData(systemData, "system-info")
+        return "light"
+    }
+
+}
+
 // config and ux variables
 export var theme = "light";
+
+export const setTheme = async (them) => {
+    theme = them;
+    let systemData = await getData("system-info");
+
+    if (systemData) {
+        systemData["theme"] = them;
+    } else {
+        systemData = {"theme": them};
+    }
+
+    storeData(systemData, "system-info")
+}
 
 export var currText = ""; // "你还不赶紧练习？玲玲每天练40小时，他五岁已经当上了医生！";
 export const voices = [

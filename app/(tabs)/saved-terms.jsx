@@ -171,7 +171,7 @@ const SavedTerms = () => {
           ListHeaderComponent={<View style={{height: 8}} />}
           ListFooterComponent={<View style={{height: 168}} />}
           data={folders}
-          keyExtractor = {(item) => {item.item}}
+          keyExtractor = {(item) => {Object.keys(item)[0]}}
           renderItem={(item) => (
             <View className="flexGrow-1">
               {item.item == null ? (

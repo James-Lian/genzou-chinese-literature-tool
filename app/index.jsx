@@ -2,7 +2,7 @@
 
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, useColorScheme, ScrollView, Image } from 'react-native';
-import { Redirect, router } from 'expo-router';
+import { useRootNavigationState, Redirect, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import * as globals from '../config/globals.js'
@@ -11,9 +11,18 @@ import { Colours } from '../constants'
 import { Icons } from "../constants"
 
 import { WelcomeButton } from '../components'
+import { useEffect } from 'react';
 
 export default function App() {
+  const rootNavigationState = useRootNavigationState()
+  const navigatorReady = rootNavigationState?.key != null
   // globals.theme = "dark"; // testing out dark theme
+
+  if (!navigatorReady) {
+    if (globals.getWelcomed()) {
+      return <Redirect href='/editor' />
+    }
+  }
 
   return (
     <SafeAreaView className="flex-1 items-center h-full" style={{backgroundColor: Colours[globals.theme]["background"]}}>
@@ -112,7 +121,7 @@ export default function App() {
       <View className="w-full items-center px-3">
         <WelcomeButton
           title="< Enter >"
-          handlePress={() => router.replace('/editor')}
+          handlePress={() => {router.replace('/editor'); globals.setWelcomed(true)}}
           containerStyles="w-full mt-8"
           textStyles="text-2xl text-center"
         />
