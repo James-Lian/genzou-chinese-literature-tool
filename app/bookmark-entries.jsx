@@ -5,7 +5,7 @@ import * as globals from '../config/globals.js'
 import { Colours } from '../constants'
 import { Icons } from '../constants/index.js'
 
-import { router, useLocalSearchParams, Stack, useNavigation } from 'expo-router';
+import { router, useLocalSearchParams, Stack, useNavigation } from 'expo-router'
 
 import PinyinTones from 'pinyin-tone'
 import emitter from '../components/EventEmitter.js'
@@ -63,6 +63,7 @@ const BookmarkEntry = () => {
         folderNamesWithoutCurrent.splice(folderNamesWithoutCurrent.indexOf(title), 1)
       }
       setFolderNames(folderNamesWithoutCurrent)
+      setfolderToMoveTo(folderNamesWithoutCurrent[0])
 
       let foundFolderName = false
       while (!foundFolderName) {
@@ -153,7 +154,7 @@ const BookmarkEntry = () => {
           ListHeaderComponent={<View style={{height: 8}} />}
           ListFooterComponent={<View style={{height: 168}} />}
           data={entryList}
-          keyExtractor={(item) => {entryList.indexOf(item)}}
+          keyExtractor={(item) => {item}}
           renderItem={(entry) => (
             <View className="flex-row items-center">
               {editing &&
@@ -182,6 +183,38 @@ const BookmarkEntry = () => {
                   <Text numberOfLines={1} className={'bg-transparent px-3 font-normal mt-[2px] mb-[3px]'}>{returnAllDefs(entry.item).join(" / ")}</Text>
                 </View>
               </TouchableOpacity>
+              {editing && entryList.length > 1 &&
+                <View className="flex-row">
+                  <TouchableOpacity 
+                    className="min-h-[28px] max-h-[28px] min-w-[38px] max-w-[38px] ml-3"
+                    onPress={async () => {
+                      await globals.reorderBookmarks(entry.item, title, 1);
+                      emitter.emit("bookmarksChanged")
+                    }}
+                  >
+                    <Image
+                      source={Icons.upChevron}
+                      tintColor={Colours[globals.theme]["darkerGray"]}
+                      resizeMode='contain'
+                      className="max-h-[28px] max-w-[28px]"
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    className="min-h-[28px] max-h-[28px] min-w-[38px] max-w-[38px] mr-3 ml-3"
+                    onPress={async () => {
+                      await globals.reorderBookmarks(entry.item, title, -1);
+                      emitter.emit("bookmarksChanged")
+                    }}
+                  >
+                    <Image
+                      source={Icons.downChevron}
+                      tintColor={Colours[globals.theme]["darkerGray"]}
+                      resizeMode='contain'
+                      className="max-h-[28px] max-w-[28px]"
+                    />
+                  </TouchableOpacity>
+                </View>
+              }
             </View>
           )}
         />
@@ -274,7 +307,7 @@ const BookmarkEntry = () => {
                       <View className="items-center mb-3">
                         <SelectDropdown
                           data={folderNames}
-                          defaultValueByIndex={folderToMoveTo}
+                          defaultValueByIndex={0}
                           onSelect={(selectedItem, index) => {
                             setfolderToMoveTo(selectedItem); // and prompting rerender
                           }}

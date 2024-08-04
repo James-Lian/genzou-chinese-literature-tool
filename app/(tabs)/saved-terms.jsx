@@ -73,29 +73,6 @@ const SavedTerms = () => {
 
   useEffect(() => {}, [])
 
-  const combineFolders = async () => {
-    Alert.prompt(
-      "Create a new folder", 
-      "Give your folder a unique name", 
-      [
-        {
-          text: "Cancel",
-        },
-        {
-          text: "OK",
-          onPress: async (folderName) => {
-            if (await globals.createBookmarkFolder(folderName) === false) {
-              Alert.alert("Error", "That folder name already exists")
-            } else {
-              emitter.emit('bookmarksChanged')
-            }
-          }
-        }
-      ],
-      "plain-text"
-    )
-  }
-
   return (
     <SafeAreaView className="min-h-full min-w-full">
       {!editing ? (
@@ -128,10 +105,23 @@ const SavedTerms = () => {
         <View className="w-full justify-center items-center flex-row h-[58px] py-3 pl-[20px] pr-[16px]" style={{backgroundColor: Colours[globals.theme]["background"]}}>
           <TouchableOpacity
             onPress={async () => {
-              await globals.deleteBookmarkFolders(selectedFolders)
-              setEditing(false);
-              setSelectedFolders([])
-              emitter.emit('bookmarksChanged')
+              let numBookmarks = 0;
+              for (let sFolder of selectedFolders) {
+                let contents = await globals.getBookmarkFolderContents(sFolder)
+                numBookmarks += contents.length;
+              }
+              Alert.alert('Deleting Folders', 'Are you sure you want to delete `' + numBookmarks.toString() + ((numBookmarks > 1) ? ('` bookmarks?') : ('` bookmark?')), [
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
+                },
+                {text: 'OK', onPress: async () => {
+                  await globals.deleteBookmarkFolders(selectedFolders)
+                  setEditing(false);
+                  setSelectedFolders([])
+                  emitter.emit('bookmarksChanged')
+                }},
+              ]);
             }}
           >
             <Text className="text-lg font-qbold" style={{color: Colours[globals.theme]["darkGray"]}}>Delete</Text>
@@ -139,31 +129,36 @@ const SavedTerms = () => {
           <TouchableOpacity 
             className="items-center flex-1"
             onPress={() => {
-              Alert.prompt(
-                "Create a new folder", 
-                "Give your folder a unique name", 
-                [
-                  {
-                    text: "Cancel",
-                  },
-                  {
-                    text: "OK",
-                    onPress: async (folderName) => {
-                      await globals.combineBookmarkFolders(selectedFolders, folderName)
-                      setEditing(false);
-                      setSelectedFolders([])        
-                      emitter.emit('bookmarksChanged')
+              if (folders.length > 1 && selectedFolders.length > 1) {
+                Alert.prompt(
+                  "Create a new folder", 
+                  "(FYI: When combining folders, duplicated entries will be automatically removed)", 
+                  [
+                    {
+                      text: "Cancel",
+                    },
+                    {
+                      text: "OK",
+                      onPress: async (folderName) => {
+                        await globals.combineBookmarkFolders(selectedFolders, folderName)
+                        setEditing(false);
+                        setSelectedFolders([])        
+                        emitter.emit('bookmarksChanged')
+                      }
                     }
-                  }
-                ],
-                "plain-text"
-              )
+                  ],
+                  "plain-text"
+                )
+              }
             }}
           >
             <Text className="text-lg font-qbold" style={{color: Colours[globals.theme]["darkGray"]}}>Combine</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => {setEditing(false)}}
+            onPress={() => {
+              setEditing(false);
+              setSelectedFolders([]);
+            }}
           >
             <Text className="text-lg font-qbold" style={{color: Colours[globals.theme]["darkGray"]}}>Cancel</Text>
           </TouchableOpacity>

@@ -128,8 +128,16 @@ export const moveBookmark = async (values, oldFolder, newFolder) => {
         await delBookmark([value], oldFolder)
         await setBookmark([value], newFolder)
     }
+}
+
+export const reorderBookmarks = async (value, folder, direction) => {
     let bookmarkData = await getData("bookmarks")
-    console.log(bookmarkData)
+    const fromIndex = bookmarkData[folder].indexOf(value)
+    if (fromIndex + direction >= 0 && fromIndex + direction < bookmarkData[folder].length) {
+        bookmarkData[folder].splice(fromIndex, 1);
+        bookmarkData[folder].splice(fromIndex + direction, 0, value)
+        storeData(bookmarkData, "bookmarks")
+    }
 }
 
 export const combineBookmarkFolders = async (folders, newFolder) => {
@@ -138,8 +146,11 @@ export const combineBookmarkFolders = async (folders, newFolder) => {
     let values = []
 
     for (let folder of folders) {
-        values = values.concat(bookmarkData[folder])
-        console.log(bookmarkData[folder], values, newFolder)
+        for (let value of bookmarkData[folder]) {
+            if (!values.includes(value)) {
+                values.push(value);
+            }
+        }
         await deleteBookmarkFolders([folder])
     }
 
