@@ -12,7 +12,7 @@ const WelcomeButton = ({ title, handlePress, containerStyles, textStyles, isLoad
         className={`mx-3 px-3 rounded-xl min-h-[62px] justify-center items-center ${containerStyles} ${isLoading ? 'opacity-50' : ''}`} style={{backgroundColor: Colours[globals.theme]["indigo"]}}
         disabled={isLoading}
     >
-        <Text className={`font-qbold ${textStyles}`} style={{color: Colours[globals.theme]["background"]}}> 
+        <Text className={`font-qbold ${textStyles}`} style={{color: Colours[globals.theme]["background"]}} allowFontScaling={false}> 
             {title} 
         </Text>
     </TouchableOpacity>

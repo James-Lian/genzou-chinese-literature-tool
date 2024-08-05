@@ -379,7 +379,6 @@ const Editor = () => {
                 placeholder="Enter Chinese text here... "
                 placeholderTextColor={Colours[globals.theme]["gray"]}
                 multiline={true}
-                textAlignVertical={true}
                 allowFontScaling={false}
                 onChangeText={(txt) => {textChanged(txt)}}
                 onSelectionChange={handleSelectionChange}
@@ -412,16 +411,16 @@ const Editor = () => {
                   <View className="flex-1">
                     {globals.editorModes[globals.currEditorMode] == "Translation" ? (
                       <View className="flex-1">
-                        <Text style={{fontSize: editorTextSize, color: "white"}} className={'px-3 font-qbold text-left'}>{item}</Text>
+                        <Text style={{fontSize: editorTextSize, color: "white"}} className={'px-3 font-qbold text-left'} allowFontScaling={false}>{item}</Text>
                       </View>
                     ) : (
                       <View className='flex-row' style={{width: windowWidth, maxWidth: windowWidth}} key={index*8000}>
                         {item.split(" ").map((input, subIndex) => (
                           <View>
                             {index % 2 == 0 ? (
-                              <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: editorTextSize, color: "white"}} className={'px-3 font-qbold text-center'} key={subIndex*91}>{input.trim()}</Text>
+                              <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: editorTextSize, color: "white"}} className={'px-3 font-qbold text-center'} key={subIndex*91} allowFontScaling={false}>{input.trim()}</Text>
                             ) : (
-                              <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: Math.floor(editorTextSize / 1.8), color: "white", fontFamily:"Arial", fontWeight:"bold"}} className='text-center' key={subIndex*3}>{input.trim()}</Text>
+                              <Text style={{width: Math.floor(windowWidth / numCharsPerRow), fontSize: Math.floor(editorTextSize / 1.8), color: "white", fontFamily:"Arial", fontWeight:"bold"}} className='text-center' key={subIndex*3} allowFontScaling={false}>{input.trim()}</Text>
                             )}
                           </View>
                         ))}

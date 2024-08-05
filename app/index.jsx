@@ -43,7 +43,7 @@ export default function App() {
                 resizeMode="contain"
               />
             </View>
-            <Text className="ml-2 text-[16px] font-qbold mt-2.5" style={{color: Colours[globals.theme]["text"]}}> {'>'}  Scan Chinese text with your camera </Text>
+            <Text className="ml-2 text-[16px] font-qbold mt-2.5 text-lg" style={{color: Colours[globals.theme]["text"]}}> {'>'}  Scan Chinese text with your camera </Text>
           </View>
         </View>
 
@@ -57,7 +57,7 @@ export default function App() {
                 resizeMode="contain"
               />
             </View>
-            <Text className="ml-2 text-[16px] font-qbold mt-2.5" style={{color: Colours[globals.theme]["text"]}}> {'>'}  Convert your textbooks to Pinyin </Text>
+            <Text className="ml-2 text-[16px] font-qbold mt-2.5 text-lg" style={{color: Colours[globals.theme]["text"]}}> {'>'}  Convert your textbooks to Pinyin </Text>
           </View>
         </View>
 
@@ -71,7 +71,7 @@ export default function App() {
                 resizeMode="contain"
               />
             </View>
-            <Text className="ml-2 text-[16px] font-qbold mt-2.5" style={{color: Colours[globals.theme]["text"]}}> {'>'}  Look up phrases in a dictionary </Text>
+            <Text className="ml-2 text-[16px] font-qbold mt-2.5 text-lg" style={{color: Colours[globals.theme]["text"]}}> {'>'}  Look up phrases in a dictionary </Text>
           </View>
         </View>
 
@@ -85,7 +85,7 @@ export default function App() {
                 resizeMode="contain"
               />
             </View>
-            <Text className="ml-2 text-[16px] font-qbold mt-2.5" style={{color: Colours[globals.theme]["text"]}}> {'>'}  Bookmark your favourite words </Text>
+            <Text className="ml-2 text-[16px] font-qbold mt-2.5 text-lg" style={{color: Colours[globals.theme]["text"]}}> {'>'}  Bookmark your favourite words </Text>
           </View>
         </View>
 
@@ -99,7 +99,7 @@ export default function App() {
                 resizeMode="contain"
               />
             </View>
-            <Text className="ml-2 text-[16px] font-qbold mt-2.5" style={{color: Colours[globals.theme]["text"]}}> {'>'}  Translate entire sentences </Text>
+            <Text className="ml-2 text-[16px] font-qbold mt-2.5 text-lg" style={{color: Colours[globals.theme]["text"]}}> {'>'}  Translate entire sentences </Text>
           </View>
         </View>
 
@@ -113,7 +113,7 @@ export default function App() {
                 resizeMode="contain"
               />
             </View>
-            <Text className="ml-2 text-[16px] font-qbold mt-2.5" style={{color: Colours[globals.theme]["text"]}}> {'>'}  Learn pronunciation with TTS </Text>
+            <Text className="ml-2 text-[16px] font-qbold mt-2.5 text-lg" style={{color: Colours[globals.theme]["text"]}}> {'>'}  Learn pronunciation with TTS </Text>
           </View>
         </View>
       </ScrollView>

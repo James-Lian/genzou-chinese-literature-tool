@@ -188,6 +188,7 @@ const Lookup = () => {
           className="rounded-lg ml-1"
           style={{borderWidth: 2, borderColor: Colours[globals.theme]["indigo"], backgroundColor: Colours[globals.theme]["indigo"]}}
           onPress={() => {(searchMode == "CH") ? setSearchMode("EN") : setSearchMode("CH")}}
+          allowFontScaling={false}
         >
           <Text className="font-qbold px-[6px] py-[3px] text-lg" style={{color:"white"}}>{searchMode}</Text>
         </TouchableOpacity>

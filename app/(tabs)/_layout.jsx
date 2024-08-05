@@ -6,6 +6,9 @@ import * as globals from '../../config/globals.js'
 import { Colours } from '../../constants'
 import { Icons } from "../../constants"
 
+Text.defaultProps = Text.defaultProps || {};
+Text.defaultProps.allowFontScaling = false;
+
 const TabIcon = ({ icon, color, name, focused }) => {
     return (
         <View className="items-center justify-center">

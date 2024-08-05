@@ -171,12 +171,12 @@ const SavedTerms = () => {
           ListHeaderComponent={<View style={{height: 8}} />}
           ListFooterComponent={<View style={{height: 168}} />}
           data={folders}
-          keyExtractor = {(item) => {Object.keys(item)[0]}}
+          keyExtractor = {(item) => {item}}
           renderItem={(item) => (
             <View className="flexGrow-1">
               {item.item == null ? (
                 <View className="p-[12px]">
-                  <Text className="text-lg">No bookmarks saved.</Text>
+                  <Text className="text-lg" allowFontScaling={false}>No bookmarks saved.</Text>
                 </View>
               ) : (
                 <TouchableOpacity 
