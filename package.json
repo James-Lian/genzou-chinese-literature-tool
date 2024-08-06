@@ -31,7 +31,6 @@
     "expo-updates": "~0.25.21",
     "get-text-width": "^1.0.3",
     "glob": "^11.0.0",
-    "http-proxy-agent": "^7.0.2",
     "i18next": "^23.12.2",
     "i18next-browser-languagedetector": "^8.0.0",
     "i18next-http-backend": "^2.5.2",

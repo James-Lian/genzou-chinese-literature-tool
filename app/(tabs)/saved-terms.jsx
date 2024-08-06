@@ -87,7 +87,7 @@ const SavedTerms = () => {
               className="max-h-[28px] max-w-[28px]"
             />
           </TouchableOpacity>
-          <Text className="text-lg text-center font-qbold flex-1">Bookmarks</Text>
+          <Text className="text-xl text-center font-qbold flex-1">Bookmarks</Text>
           <TouchableOpacity
             onPress={() => {
               setEditing(true);

@@ -13,7 +13,7 @@ import { Colours } from '../../constants'
 import { RootSiblingParent } from 'react-native-root-siblings';
 import Toast from 'react-native-root-toast';
 
-import { DataInputType, getText, OcrEngineMode, useOCREventListener } from 'rn-ocr-lib';
+import TextRecognition, {TextRecognitionScript} from '@react-native-ml-kit/text-recognition';
 
 const Camera = () => {
   let windowHeight = Dimensions.get('window').height;
@@ -66,40 +66,13 @@ const Camera = () => {
 
   const recognizeText = async (uri) => {
     if (uri) {
-      try {
-        getText(uri.replace("file://", ''), DataInputType.file, {
-          ocrEngineMode: OcrEngineMode.ACCURATE,
-          lang: ['chi_sim', 'chi_tra', 'eng']
-        })
-      } catch (e) {
-        console.log(e.message)
-      }
-      // const resultFromUri = await TextRecognition.recognize(uri, TextRecognitionScript.CHINESE);
-      // console.log(resultFromUri.text)
-      // setScannedText(resultFromUri);
-      // setConfirmDialogOpen(true);
+      const resultFromUri = await TextRecognition.recognize(uri, TextRecognitionScript.CHINESE);
+      setScannedText(resultFromUri.text);
+      setConfirmDialogOpen(true);
     } else {
       let toast = Toast.show('Error: invalid image.', { hideOnPress: true, duration: Toast.durations.SHORT, position: Toast.positions.BOTTOM, backgroundColor: Colours[globals.theme]["opposite"] , shadowColor: Colours[globals.theme]["darkerGray"] })
     }
   }
-
-  useOCREventListener((event, data) => {
-    switch (event) {
-      case OCREvent.FINISHED:
-        console.log(data.text)
-        setScannedText(data.text);
-        setConfirmDialogOpen(true);
-        return;
-      case OCREvent.PROGRESS:
-        // setProgress(data.percent);
-        return;
-      case OCREvent.ERROR:
-        console.log(data.error);
-        return;
-      default:
-        return;
-    }
-  })
 
   return (
     <RootSiblingParent>
@@ -170,9 +143,6 @@ const Camera = () => {
                   textStyles="text-xl text-center"
                   handlePress={() => {recognizeText(userSelectedImage)}}
                 />
-              </View>
-              <View className="justify-center items-center">
-                <Button title='Test out Modal' onPress={() => {setConfirmDialogOpen(true);}}/>
               </View>
             </View>
           </ScrollView>

@@ -1,4 +1,4 @@
-import { View, Text, Button, SafeAreaView, Switch, ScrollView, StyleSheet, Image } from 'react-native'
+import { View, Text, Button, SafeAreaView, Switch, ScrollView, StyleSheet, Image, Alert, Linking } from 'react-native'
 import React from 'react'
 import { router } from 'expo-router'
 
@@ -7,55 +7,54 @@ import { Colours } from '../../constants/index.js'
 import { Images } from '../../constants/index.js'
 import { Icons } from '../../constants/index.js'
 
-import SelectDropdown from 'react-native-select-dropdown'
+import emitter from '../../components/EventEmitter.js'
 
 const More = () => {
   return (
     <SafeAreaView>
       <ScrollView className="h-full w-full">
-        <Text className="text-lg mt-8 px-3 text-center">Permissions required: storage, camera, photo library</Text>
+        <View className="mb-3">
+          <Text className="font-qbold text-2xl mt-8 mb-3 px-3">Notes</Text>
+          <View className="py-2" style={{borderTopWidth: 1, borderBottomWidth: 1, borderColor: Colours[globals.theme]["text"]}}>
+            <Text className="text-xl px-3 font-qbold mb-[2px]">Permissions required:</Text>
+            <Text className="text-xl px-3 font-qnormal">Storage, camera, photo library</Text>
+          </View>
+          <View className="py-2" style={{borderTopWidth: 0, borderBottomWidth: 1, borderColor: Colours[globals.theme]["text"]}}>
+            <Text className="text-xl px-3 font-qbold mb-[2px]">Error: TooManyRequests (API error)</Text>
+            <Text className="text-xl px-3 font-qnormal">Unfortunately, the translation API has limits that are hard to bypass. It's fine though - Genzou was never meant to really be a translation app. I suggest using a better translator app instead, like Google Translate.</Text>
+          </View>
+        </View>
+        <View className="mb-3">
+          <Text className="font-qbold text-2xl mt-8 mb-3 px-3">Credits</Text>
+          <View className="py-2" style={{borderTopWidth: 1, borderBottomWidth: 1, borderColor: Colours[globals.theme]["text"]}}>
+            <Text className="text-xl px-3 font-qbold mb-[2px]">Development</Text>
+            <Text className="text-xl px-3 font-qnormal">Created by James Lian using React Native and Expo.</Text>
+          </View>
+          <View className="py-2" style={{borderTopWidth: 0, borderBottomWidth: 1, borderColor: Colours[globals.theme]["text"]}}>
+            <Text className="text-xl px-3 font-qbold mb-[2px]">Lexicon</Text>
+            <Text className="text-xl px-3 font-qnormal">Dictionary data comes from CC-CEDICT, provided on <Text className="text-blue-600" onPress={() => {Linking.openURL("https://www.mdbg.net/chinese/dictionary?page=cedict")}}>mdbg.net</Text>.</Text>
+          </View>
+          <View className="py-2" style={{borderTopWidth: 0, borderBottomWidth: 1, borderColor: Colours[globals.theme]["text"]}}>
+            <Text className="text-xl px-3 font-qbold mb-[2px]">Other</Text>
+            <Text className="text-xl px-3 font-qnormal">Special thanks to Hack Club's Cider program, which was what inspired the development of this application.</Text>
+            <Text className="text-xl px-3 font-qnormal">Find this project on <Text className="text-blue-600" onPress={() => {Linking.openURL("https://github.com/James-Lian/genzou-chinese-literature-tool")}}>Github</Text>.</Text>
+          </View>
+        </View>
         <Button onPress={() => router.replace('/')} className="text-2xl font-qnormal mt-3 text-center" style={{color: 'blue'}} title='< Go Home >' />
-        <Button onPress={() => {globals.clearAllData()}} className="text-2xl font-qnormal mt-3 text-center" style={{color: 'blue'}} title='< Clear All Data >' />
-        <Button onPress={async () => {const results = await globals.getAllData(); console.log(results)}} className="text-2xl font-qnormal mt-3 text-center" style={{color: 'blue'}} title='< Log All Data >' />
-        <Button onPress={async () => {console.log(await globals.getData("bookmarks"))}} className="text-2xl font-qnormal mt-3 text-center" style={{color: 'blue'}} title='< Log Bookmarks >' />
-        <Button onPress={async () => {console.log(globals.theme)}} className="text-2xl font-qnormal mt-3 text-center" style={{color: 'blue'}} title='< Log Globals >' />
-        <Switch
-          onValueChange={(value) => {console.log(value)}}
-          value={true}
-        />
-        <SelectDropdown
-          data={["light", "dark"]}
-          defaultValue={globals.theme}
-          onSelect={(selectedItem, index) => {
-            globals.theme = selectedItem; // and prompting rerender
+        <Button onPress={() => 
+          {
+            Alert.alert('Deleting Data', 'Are you sure you want to clear all data? This includes your bookmarks.', [
+              {
+                text: 'Cancel',
+                style: 'cancel',
+              },
+              {text: 'OK', onPress: async () => {
+                globals.clearAllData()
+                emitter.emit('bookmarksChanged')
+              }},
+            ]);
           }}
-          renderButton={(selectedItem, isOpened) => {
-            return (
-              <View style={styles.dropdownButtonStyle}>
-                <Text style={styles.dropdownButtonTxtStyle}>
-                  {selectedItem}
-                </Text>
-                <Image
-                  source={(isOpened ? Icons.upChevron : Icons.downChevron)}
-                  tintColor={Colours[globals.theme]["gray"]}
-                  resizeMode='contain'
-                  className="max-h-[22px] max-w-[32px]"
-                />
-              </View>
-            )
-          }}
-          renderItem={(item, index, isSelected) => {
-            return (
-              <View style={{
-                ...styles.dropdownItemStyle,
-                ...(isSelected && { backgroundColor: '#D2D9DF' }),
-                }}>
-                <Text style={styles.dropdownButtonTxtStyle}>{item}</Text>
-              </View>
-            )
-          }}
-          showsVerticalScrollIndicator={true}
-          dropdownStyle={styles.dropdownMenuStyle}
+          className="text-2xl font-qnormal mt-3 text-center" style={{color: 'blue'}} title='< Clear All Data >'
         />
       </ScrollView>
     </SafeAreaView>
