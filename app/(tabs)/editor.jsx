@@ -368,7 +368,7 @@ const Editor = () => {
         <View className="my-1 w-full px-2">
           <ScrollView
             ref={firstScroll}
-            className="rounded-lg w-full"
+            className="rounded-lg w-full py-1"
             contentContainerStyle={{flexGrow: 1}}
             style={{backgroundColor: Colours[globals.theme]["darker"], maxHeight:topHeight, minHeight:topHeight}}
           >
