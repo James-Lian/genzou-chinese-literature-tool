@@ -18,11 +18,17 @@ export default function App() {
   const navigatorReady = rootNavigationState?.key != null
   // globals.theme = "dark"; // testing out dark theme
 
-  if (!navigatorReady) {
-    if (globals.getWelcomed()) {
-      return <Redirect href='/editor' />
+  const welcomeObserve = async () => {
+    if (!navigatorReady) {
+      if (await globals.getWelcomed()) {
+        router.replace('/editor')
+        globals.setWelcomed(true)
+      }
     }
   }
+  useEffect(() => {
+    welcomeObserve()
+  }, [])
 
   return (
     <SafeAreaView className="flex-1 items-center h-full" style={{backgroundColor: Colours[globals.theme]["background"]}}>

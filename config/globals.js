@@ -161,7 +161,8 @@ export const getWelcomed = async () => {
     let systemData = await getData("system-info");
 
     if (systemData) {
-        return systemData["welcomed"]
+        console.log(systemData)
+        return systemData["welcomed"];
     } else {
         return false;
     }
