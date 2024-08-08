@@ -35,6 +35,11 @@ const More = () => {
             <Text className="text-xl px-3 font-qnormal">Dictionary data comes from CC-CEDICT, provided on <Text className="text-blue-600" onPress={() => {Linking.openURL("https://www.mdbg.net/chinese/dictionary?page=cedict")}}>mdbg.net</Text>.</Text>
           </View>
           <View className="py-2" style={{borderTopWidth: 0, borderBottomWidth: 1, borderColor: Colours[globals.theme]["text"]}}>
+            <Text className="text-xl px-3 font-qbold mb-[2px]">Images & Icons</Text>
+            <Text className="text-xl px-3 font-qnormal">Icons used are from <Text className="text-blue-600" onPress={() => {Linking.openURL("https://feathericons.com/")}}>Feather Icons</Text>.</Text>
+            <Text className="text-xl px-3 font-qnormal">Logos and splash screen were adapted from fonts on <Text className="text-blue-600" onPress={() => {Linking.openURL("https://chinese.gratis/tools/chinesecalligraphy/")}}>Chinese.gratis</Text>.</Text>
+          </View>
+          <View className="py-2" style={{borderTopWidth: 0, borderBottomWidth: 1, borderColor: Colours[globals.theme]["text"]}}>
             <Text className="text-xl px-3 font-qbold mb-[2px]">Other</Text>
             <Text className="text-xl px-3 font-qnormal">Special thanks to Hack Club's Cider program, which was what inspired the development of this application.</Text>
             <Text className="text-xl px-3 font-qnormal">Find this project on <Text className="text-blue-600" onPress={() => {Linking.openURL("https://github.com/James-Lian/genzou-chinese-literature-tool")}}>Github</Text>.</Text>

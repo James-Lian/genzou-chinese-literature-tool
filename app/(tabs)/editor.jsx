@@ -253,16 +253,6 @@ const Editor = () => {
               <View className="flex-1 justify-center">
                 <View className="flex-row justify-end items-center gap-[12px]">
                   <TouchableOpacity
-                    onPress={() => {}}
-                  >
-                    <Image 
-                      source={Icons.save}
-                      tintColor={Colours[globals.theme]["darkerGray"]}
-                      resizeMode='contain'
-                      className="max-h-[28px] max-w-[38px]"
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity
                     onPress={() => router.replace('/camera')}
                   >
                     <Image 
