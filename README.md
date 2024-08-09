@@ -9,3 +9,6 @@ Scan your textbooks and novels with your phone camera to upload the text to the 
 
 ### Known Errors
 After translating maybe only a couple of sentences, you might receive a TooManyRequests Error. This has to do with the translator API (which isn't exactly free 😅). There might come a day where I'll fix it, but for now use a better full-sentence translation app, like Google Translate. 
+
+### Privacy Policy
+No data of any kind (personal or otherwise) is collected at all from Genzou. 
